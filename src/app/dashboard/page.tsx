@@ -1,18 +1,11 @@
 "use client";
 
 import { useAuthStore } from "@/store/auth.store";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function DashboardPage() {
-	const { user, isAuthenticated, logout } = useAuthStore();
-	const router = useRouter();
-
-	useEffect(() => {
-		if (!isAuthenticated) {
-			router.push("/login");
-		}
-	}, [isAuthenticated, router]);
+	const { user, isAuthenticated } = useAuthStore();
+	const { logout, loading } = useAuth();
 
 	if (!isAuthenticated) return null;
 
@@ -25,8 +18,9 @@ export default function DashboardPage() {
 				</div>
 				<button
 					onClick={logout}
-					className='bg-red-50 to-red-100 text-red-600 px-6 py-2 rounded-full border border-red-200 hover:bg-red-500 hover:text-white transition-all font-semibold'>
-					Sign Out
+					disabled={loading}
+					className='bg-red-50 to-red-100 text-red-600 px-6 py-2 rounded-full border border-red-200 hover:bg-red-500 hover:text-white transition-all font-semibold disabled:opacity-50'>
+					{loading ? "Signing Out..." : "Sign Out"}
 				</button>
 			</div>
 

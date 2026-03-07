@@ -19,3 +19,19 @@ export const verifyOtp = async (
 
     return res.data;
 };
+
+export const refreshToken = async (
+    token: string
+): Promise<ApiResponse<{ access_token: string }>> => {
+    const res = await api.post(ENDPOINTS.AUTH.REFRESH_TOKEN, {
+        refresh_token: token,
+    });
+    return res.data;
+};
+
+export const logout = async (refreshToken: string): Promise<ApiResponse<any>> => {
+    const res = await api.post(ENDPOINTS.AUTH.LOGOUT, {
+        refresh_token: refreshToken,
+    });
+    return res.data;
+};
