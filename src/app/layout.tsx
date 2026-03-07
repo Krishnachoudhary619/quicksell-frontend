@@ -1,0 +1,15 @@
+import type { Metadata } from "next";
+import "./globals.css";
+
+export const metadata: Metadata = {
+	title: "Quick-share Frontend",
+	description: "A premium frontend for Quick-share",
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+	return (
+		<html lang='en'>
+			<body className='antialiased font-sans text-gray-900 bg-gray-50'>{children}</body>
+		</html>
+	);
+}
