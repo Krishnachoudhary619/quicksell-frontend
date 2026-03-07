@@ -57,7 +57,7 @@ export const useAuth = () => {
         setLoading(true);
         setError(null);
         try {
-            const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+            const { refreshToken } = useAuthStore.getState();
             if (refreshToken) {
                 await logoutService(refreshToken);
             }

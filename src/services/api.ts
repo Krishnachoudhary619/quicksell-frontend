@@ -1,6 +1,7 @@
 import axios from "axios";
-import { API_CONFIG, STORAGE_KEYS } from "@/config/constants";
+import { API_CONFIG } from "@/config/constants";
 import { ENDPOINTS } from "./endpoints";
+import { useAuthStore } from "@/store/auth.store";
 
 export const api = axios.create({
     baseURL: API_CONFIG.BASE_URL,
@@ -10,12 +11,12 @@ export const api = axios.create({
     },
 });
 
-// Attach token automatically
+// Attach token automatically from Zustand store
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+    const { accessToken } = useAuthStore.getState();
 
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
     return config;
@@ -32,30 +33,43 @@ api.interceptors.response.use(
             originalRequest._retry = true;
 
             try {
-                const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+                const { refreshToken, setAuth, logout } = useAuthStore.getState();
 
                 if (!refreshToken) {
                     throw new Error("No refresh token available");
                 }
 
-                // Call the refresh token API directly using the base URL and endpoint
-                const response = await axios.post(`${API_CONFIG.BASE_URL}${ENDPOINTS.AUTH.REFRESH_TOKEN}`, {
-                    refresh_token: refreshToken,
-                });
+                // Call the refresh token API
+                const response = await axios.post(
+                    `${API_CONFIG.BASE_URL}${ENDPOINTS.AUTH.REFRESH_TOKEN}`,
+                    {
+                        refresh_token: refreshToken,
+                    }
+                );
 
                 const { access_token } = response.data.data;
 
-                // Save new access token
-                localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, access_token);
+                // Update the store with the new access token
+                // Note: We might need to keep the user and refresh token, 
+                // but since setAuth expects VerifyOtpResponse, we'll need to handle it carefully.
+                // Assuming the store has a way to just update the token or we re-fetch user.
+                // For simplicity, let's assume we update the state directly if needed or use setAuth.
+
+                const currentState = useAuthStore.getState();
+                if (currentState.user) {
+                    setAuth({
+                        access_token,
+                        refresh_token: refreshToken, // keep existing refresh token
+                        user: currentState.user
+                    });
+                }
 
                 // Update authorization header and retry original request
                 originalRequest.headers.Authorization = `Bearer ${access_token}`;
                 return api(originalRequest);
             } catch (refreshError) {
-                // Clear tokens and redirect to login if refresh fails
-                localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
-                localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
-                localStorage.removeItem(STORAGE_KEYS.USER);
+                // Clear store and redirect to login if refresh fails
+                useAuthStore.getState().logout();
 
                 if (typeof window !== "undefined") {
                     window.location.href = "/login";
