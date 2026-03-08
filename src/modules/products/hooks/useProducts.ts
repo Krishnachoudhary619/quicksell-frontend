@@ -63,7 +63,7 @@ export const useProducts = () => {
         try {
             const response = await productService.createProduct(data);
             if (response.success && response.data) {
-                setProducts((prev) => [...prev, response.data!]);
+                await getProducts();
             } else {
                 throw new Error(response.message || "Failed to create product");
             }
@@ -83,11 +83,14 @@ export const useProducts = () => {
         setError(null);
         try {
             const response = await productService.updateProduct(id, data);
-            if (response.success && response.data) {
+            if (response.success) {
                 setProducts((prev) =>
-                    prev.map((p) => (p.id === id ? { ...p, ...response.data! } : p))
+                    prev.map((p) => (p.id === id ? { ...p, ...data, ...(response.data || {}) } : p))
                 );
-                if (product?.id === id) setProduct((prev) => (prev ? { ...prev, ...response.data! } : response.data!));
+                if (product?.id === id) {
+                    setProduct((prev) => (prev ? { ...prev, ...data, ...(response.data || {}) } : (response.data as Product || null)));
+                }
+                await getProducts();
             } else {
                 throw new Error(response.message || "Failed to update product");
             }
@@ -109,6 +112,7 @@ export const useProducts = () => {
             if (response.success) {
                 setProducts((prev) => prev.filter((p) => p.id !== id));
                 if (product?.id === id) setProduct(null);
+                await getProducts();
             } else {
                 throw new Error(response.message || "Failed to delete product");
             }
@@ -127,11 +131,14 @@ export const useProducts = () => {
         setError(null);
         try {
             const response = await productService.updateStock(id, stock_quantity);
-            if (response.success && response.data) {
+            if (response.success) {
                 setProducts((prev) =>
-                    prev.map((p) => (p.id === id ? { ...p, ...response.data! } : p))
+                    prev.map((p) => (p.id === id ? { ...p, ...(response.data || {}), stock_quantity } : p))
                 );
-                if (product?.id === id) setProduct((prev) => (prev ? { ...prev, ...response.data! } : response.data!));
+                if (product?.id === id) {
+                    setProduct((prev) => (prev ? { ...prev, ...(response.data || {}), stock_quantity } : (response.data as Product || null)));
+                }
+                await getProducts();
             } else {
                 throw new Error(response.message || "Failed to update stock");
             }
