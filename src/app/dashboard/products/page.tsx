@@ -13,9 +13,11 @@ import {
 export default function ProductsPage() {
 	const {
 		products,
+		product,
 		loading,
 		error,
 		getProducts,
+		getProduct,
 		createProduct,
 		updateProduct,
 		deleteProduct,
@@ -23,7 +25,7 @@ export default function ProductsPage() {
 	} = useProducts();
 
 	const [isFormOpen, setIsFormOpen] = useState(false);
-	const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+	const [isEditing, setIsEditing] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
 
 	useEffect(() => {
@@ -32,21 +34,26 @@ export default function ProductsPage() {
 
 	const handleCreateOrUpdate = async (data: CreateProductRequest | UpdateProductRequest) => {
 		try {
-			if (editingProduct) {
-				await updateProduct(editingProduct.id, data as UpdateProductRequest);
+			if (isEditing && product) {
+				await updateProduct(product.id, data as UpdateProductRequest);
 			} else {
 				await createProduct(data as CreateProductRequest);
 			}
 			setIsFormOpen(false);
-			setEditingProduct(null);
+			setIsEditing(false);
 		} catch (err) {
 			console.error("Operation failed:", err);
 		}
 	};
 
-	const handleEdit = (product: Product) => {
-		setEditingProduct(product);
+	const handleEdit = async (selectedProduct: Product) => {
+		setIsEditing(true);
 		setIsFormOpen(true);
+		try {
+			await getProduct(selectedProduct.id);
+		} catch (err) {
+			console.error("Failed to fetch full product details", err);
+		}
 	};
 
 	const handleDelete = async (id: string) => {
@@ -76,7 +83,7 @@ export default function ProductsPage() {
 				</div>
 				<button
 					onClick={() => {
-						setEditingProduct(null);
+						setIsEditing(false);
 						setIsFormOpen(true);
 					}}
 					className='flex items-center gap-2 px-6 py-3.5 bg-indigo-600 text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-0.5 transition-all'>
@@ -206,11 +213,11 @@ export default function ProductsPage() {
 			{isFormOpen && (
 				<div className='fixed inset-0 bg-gray-900/20 backdrop-blur-sm flex items-center justify-center p-4 z-50'>
 					<ProductForm
-						initialData={editingProduct}
+						initialData={isEditing ? product : null}
 						onSubmit={handleCreateOrUpdate}
 						onCancel={() => {
 							setIsFormOpen(false);
-							setEditingProduct(null);
+							setIsEditing(false);
 						}}
 						loading={loading}
 					/>
