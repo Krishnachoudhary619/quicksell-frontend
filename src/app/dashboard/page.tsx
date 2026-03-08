@@ -2,6 +2,7 @@
 
 import { useAuthStore } from "@/store/auth.store";
 import { useAuth } from "@/hooks/useAuth";
+import Link from "next/link";
 
 export default function DashboardPage() {
 	const { user, isAuthenticated } = useAuthStore();
@@ -46,18 +47,26 @@ export default function DashboardPage() {
 				<div className='p-6 bg-white rounded-2xl shadow-sm border border-gray-100'>
 					<h2 className='text-xl font-semibold mb-4 text-indigo-600'>Quick Actions</h2>
 					<div className='grid grid-cols-2 gap-4'>
-						<button className='p-4 bg-gray-50 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 border border-transparent hover:border-indigo-100 transition-all text-sm font-medium'>
+						<Link
+							href='/dashboard/products'
+							className='p-4 bg-gray-50 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 border border-transparent hover:border-indigo-100 transition-all text-sm font-medium text-center'>
 							Manage Products
-						</button>
-						<button className='p-4 bg-gray-50 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 border border-transparent hover:border-indigo-100 transition-all text-sm font-medium'>
+						</Link>
+						<Link
+							href='/dashboard/orders'
+							className='p-4 bg-gray-50 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 border border-transparent hover:border-indigo-100 transition-all text-sm font-medium text-center'>
 							View Orders
-						</button>
-						<button className='p-4 bg-gray-50 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 border border-transparent hover:border-indigo-100 transition-all text-sm font-medium'>
-							Catalog View
-						</button>
-						<button className='p-4 bg-gray-50 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 border border-transparent hover:border-indigo-100 transition-all text-sm font-medium'>
-							Settings
-						</button>
+						</Link>
+						<Link
+							href='/dashboard/catalogs'
+							className='p-4 bg-gray-50 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 border border-transparent hover:border-indigo-100 transition-all text-sm font-medium text-center'>
+							Catalogs
+						</Link>
+						<Link
+							href='/dashboard/profile'
+							className='p-4 bg-gray-50 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 border border-transparent hover:border-indigo-100 transition-all text-sm font-medium text-center'>
+							Profile
+						</Link>
 					</div>
 				</div>
 			</div>
