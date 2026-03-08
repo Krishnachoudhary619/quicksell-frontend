@@ -169,7 +169,7 @@ export default function CatalogsPage() {
 			)}
 
 			{isManagerOpen && (
-				<div className='fixed inset-0 bg-gray-900/40 backdrop-blur-md flex items-center justify-center p-4 z-[60] animate-in fade-in duration-300'>
+				<div className='fixed inset-0 bg-gray-900/40 backdrop-blur-md flex items-center justify-center md:p-4 z-[60] animate-in fade-in duration-300'>
 					<CatalogManager
 						catalogData={catalogProducts}
 						allProducts={allProducts}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { CatalogProductsResponse, CatalogProduct } from "@/modules/catalogs/types/catalog.types";
 import { Product } from "@/modules/products/types/product.types";
 
@@ -23,13 +23,25 @@ export default function CatalogManager({
 }: CatalogManagerProps) {
 	const [isSelecting, setIsSelecting] = useState(false);
 	const [selectedIds, setSelectedIds] = useState<string[]>([]);
-
-	// Safe access to products
-	const currentProducts = catalogData?.products || [];
-	const currentProductIds = new Set(currentProducts.map((p) => p.id));
+	const [selectionSearch, setSelectionSearch] = useState("");
 
 	// Filter out products already in the catalog for the selector
-	const availableProducts = allProducts.filter((p) => !currentProductIds.has(p.id));
+	const availableProducts = useMemo(() => {
+		const currentProductIds = new Set(catalogData?.products.map((p) => p.id) || []);
+		let filtered = allProducts.filter((p) => !currentProductIds.has(p.id));
+
+		if (selectionSearch) {
+			const query = selectionSearch.toLowerCase();
+			filtered = filtered.filter(
+				(p) =>
+					p.product_name.toLowerCase().includes(query) ||
+					(p.category && p.category.toLowerCase().includes(query)),
+			);
+		}
+		return filtered;
+	}, [allProducts, catalogData?.products, selectionSearch]);
+
+	const currentProducts = catalogData?.products || [];
 
 	const toggleSelection = (id: string) => {
 		setSelectedIds((prev) =>
@@ -44,7 +56,7 @@ export default function CatalogManager({
 	};
 
 	return (
-		<div className='bg-white rounded-[2.5rem] shadow-2xl w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-500'>
+		<div className='bg-white md:rounded-[2.5rem] shadow-2xl w-full max-w-4xl h-screen md:h-[85vh] flex flex-col overflow-hidden animate-in fade-in md:slide-in-from-bottom-8 duration-500'>
 			{/* Header */}
 			<div className='p-8 border-b border-gray-50 flex items-center justify-between shrink-0 bg-white z-10'>
 				<div>
@@ -64,15 +76,15 @@ export default function CatalogManager({
 				</div>
 				<button
 					onClick={onClose}
-					className='p-3 hover:bg-gray-100 rounded-2xl transition-all text-gray-400'>
+					className='p-2 md:p-3 hover:bg-gray-100 rounded-2xl transition-all text-gray-400'>
 					<svg
 						xmlns='http://www.w3.org/2000/svg'
-						width='24'
-						height='24'
+						width='20'
+						height='20'
 						viewBox='0 0 24 24'
 						fill='none'
 						stroke='currentColor'
-						strokeWidth='2.5'
+						strokeWidth='3'
 						strokeLinecap='round'
 						strokeLinejoin='round'>
 						<line x1='18' y1='6' x2='6' y2='18'></line>
@@ -85,7 +97,7 @@ export default function CatalogManager({
 				{!isSelecting ? (
 					// List of Current Products
 					<div className='space-y-4'>
-						<div className='flex justify-between items-center mb-6'>
+						<div className='flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4'>
 							<h3 className='font-bold text-gray-900 flex items-center gap-2'>
 								Mapped Products
 								<span className='text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded text-xs'>
@@ -93,8 +105,11 @@ export default function CatalogManager({
 								</span>
 							</h3>
 							<button
-								onClick={() => setIsSelecting(true)}
-								className='flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white text-sm font-bold rounded-xl hover:bg-black transition-all shadow-lg active:scale-95'>
+								onClick={() => {
+									setIsSelecting(true);
+									setSelectionSearch("");
+								}}
+								className='w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white text-sm font-black rounded-2xl hover:bg-black transition-all shadow-lg active:scale-95'>
 								<svg
 									xmlns='http://www.w3.org/2000/svg'
 									width='16'
@@ -188,27 +203,54 @@ export default function CatalogManager({
 				) : (
 					// Product Selection View
 					<div className='space-y-4'>
-						<div className='flex justify-between items-center mb-6 sticky top-0 bg-white py-2 z-10'>
-							<button
-								onClick={() => setIsSelecting(false)}
-								className='text-sm font-bold text-gray-400 hover:text-gray-900 flex items-center gap-1 transition-all'>
-								<svg
-									xmlns='http://www.w3.org/2000/svg'
-									width='16'
-									height='16'
-									viewBox='0 0 24 24'
-									fill='none'
-									stroke='currentColor'
-									strokeWidth='3'
-									strokeLinecap='round'
-									strokeLinejoin='round'>
-									<polyline points='15 18 9 12 15 6'></polyline>
-								</svg>
-								Back to management
-							</button>
-							<p className='text-xs font-black text-indigo-600 uppercase tracking-widest'>
-								Select products below
-							</p>
+						<div className='sticky top-0 bg-white py-4 z-20 space-y-4'>
+							<div className='flex justify-between items-center'>
+								<button
+									onClick={() => setIsSelecting(false)}
+									className='text-sm font-black text-gray-400 hover:text-indigo-600 flex items-center gap-1 transition-all uppercase tracking-widest'>
+									<svg
+										xmlns='http://www.w3.org/2000/svg'
+										width='16'
+										height='16'
+										viewBox='0 0 24 24'
+										fill='none'
+										stroke='currentColor'
+										strokeWidth='3'
+										strokeLinecap='round'
+										strokeLinejoin='round'>
+										<polyline points='15 18 9 12 15 6'></polyline>
+									</svg>
+									Back
+								</button>
+								<p className='text-[10px] font-black text-indigo-600 uppercase tracking-widest'>
+									Add products
+								</p>
+							</div>
+
+							<div className='relative'>
+								<div className='absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400'>
+									<svg
+										xmlns='http://www.w3.org/2000/svg'
+										width='18'
+										height='18'
+										viewBox='0 0 24 24'
+										fill='none'
+										stroke='currentColor'
+										strokeWidth='3'
+										strokeLinecap='round'
+										strokeLinejoin='round'>
+										<circle cx='11' cy='11' r='8'></circle>
+										<line x1='21' y1='21' x2='16.65' y2='16.65'></line>
+									</svg>
+								</div>
+								<input
+									type='text'
+									placeholder='Search by name or category...'
+									value={selectionSearch}
+									onChange={(e) => setSelectionSearch(e.target.value)}
+									className='w-full pl-12 pr-4 py-4 bg-gray-50 border border-transparent focus:bg-white focus:border-indigo-100 rounded-2xl outline-none transition-all font-bold text-gray-900 placeholder:text-gray-300'
+								/>
+							</div>
 						</div>
 
 						{availableProducts.length === 0 ? (
@@ -272,18 +314,18 @@ export default function CatalogManager({
 
 			{/* Footer Action Bar (only show when selecting) */}
 			{isSelecting && selectedIds.length > 0 && (
-				<div className='p-6 bg-white border-t border-gray-50 flex items-center justify-between animate-in slide-in-from-bottom-full duration-300 shadow-[0_-10px_40px_rgba(0,0,0,0.04)]'>
-					<p className='font-bold text-gray-900'>
-						<span className='px-2 py-0.5 bg-indigo-600 text-white rounded text-sm mr-2'>
+				<div className='p-6 bg-white border-t border-gray-50 flex flex-col sm:flex-row items-center justify-between animate-in slide-in-from-bottom-full duration-300 shadow-[0_-10px_40px_rgba(0,0,0,0.04)] gap-4'>
+					<p className='font-black text-gray-900'>
+						<span className='px-3 py-1 bg-indigo-600 text-white rounded-lg text-sm mr-2 shadow-lg shadow-indigo-100'>
 							{selectedIds.length}
 						</span>
-						Products selected
+						Items selected
 					</p>
 					<button
 						onClick={handleAddSelected}
 						disabled={loading}
-						className='px-10 py-4 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 shadow-xl shadow-indigo-100 transition-all active:scale-95'>
-						{loading ? "Processing..." : "Map to Catalog"}
+						className='w-full sm:w-auto px-10 py-4 bg-indigo-600 text-white font-black rounded-[1.5rem] hover:bg-indigo-700 shadow-2xl shadow-indigo-100 transition-all active:scale-95'>
+						{loading ? "Processing..." : "Add to Catalog"}
 					</button>
 				</div>
 			)}

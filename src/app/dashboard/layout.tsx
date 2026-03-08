@@ -5,6 +5,7 @@ import { useAuthStore } from "@/store/auth.store";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 const NAV_ITEMS = [
 	{
@@ -114,14 +115,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 	const { user } = useAuthStore();
 	const { logout } = useAuth();
 	const pathname = usePathname();
+	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
 	if (!isAuthenticated) return null;
 
 	return (
 		<div className='min-h-screen bg-[#FAFAFB] flex'>
 			{/* Professional Sidebar */}
-			<aside className='w-72 bg-white border-r border-gray-100 flex flex-col h-screen sticky top-0 z-50 overflow-y-auto hidden md:flex'>
-				<div className='p-10'>
+			{/* Mobile Sidebar Overlay */}
+			{isMobileMenuOpen && (
+				<div
+					className='fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] md:hidden'
+					onClick={() => setIsMobileMenuOpen(false)}
+				/>
+			)}
+
+			{/* Sidebar (Desktop & Mobile) */}
+			<aside
+				className={`
+				w-72 bg-white border-r border-gray-100 flex flex-col h-screen sticky top-0 z-[101] overflow-y-auto
+				transition-transform duration-300 md:translate-x-0
+				${isMobileMenuOpen ? "translate-x-0 fixed" : "-translate-x-full absolute md:relative"}
+			`}>
+				<div className='p-8 md:p-10 flex items-center justify-between'>
 					<div className='flex items-center gap-3'>
 						<div className='w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center text-white shadow-lg'>
 							<svg
@@ -143,6 +159,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 							QuickSell
 						</span>
 					</div>
+					<button
+						onClick={() => setIsMobileMenuOpen(false)}
+						className='md:hidden p-2 text-gray-400 hover:text-gray-900'>
+						<svg
+							xmlns='http://www.w3.org/2000/svg'
+							width='24'
+							height='24'
+							viewBox='0 0 24 24'
+							fill='none'
+							stroke='currentColor'
+							strokeWidth='2.5'
+							strokeLinecap='round'
+							strokeLinejoin='round'>
+							<line x1='18' y1='6' x2='6' y2='18'></line>
+							<line x1='6' y1='6' x2='18' y2='18'></line>
+						</svg>
+					</button>
 				</div>
 
 				<nav className='flex-1 px-6 space-y-2'>
@@ -152,6 +185,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 							<Link
 								key={item.href}
 								href={item.href}
+								onClick={() => setIsMobileMenuOpen(false)}
 								className={`flex items-center gap-4 px-6 py-4 rounded-2xl font-black transition-all ${
 									isActive
 										? "bg-indigo-600 text-white shadow-xl shadow-indigo-100"
@@ -166,17 +200,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 					})}
 				</nav>
 
-				<div className='p-8 space-y-4'>
-					<div className='p-6 bg-gray-50 rounded-[2rem] border border-gray-100 text-center'>
-						<div className='w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm font-black text-indigo-600'>
-							{user?.role?.[0] || "U"}
-						</div>
-						<p className='text-xs font-black text-gray-900 truncate mb-1'>WHOLESALER</p>
-						<p className='text-[10px] font-bold text-gray-400 uppercase tracking-widest'>
-							Premium Active
-						</p>
-					</div>
-
+				<div className='p-8'>
 					<button
 						onClick={logout}
 						className='w-full flex items-center gap-4 px-8 py-4 text-rose-500 font-bold hover:bg-rose-50 rounded-2xl transition-all group'>
@@ -202,45 +226,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
 			<div className='flex-1 flex flex-col'>
 				{/* Top Header */}
-				<header className='h-24 bg-white/80 backdrop-blur-md border-b border-gray-50 flex items-center justify-between px-10 sticky top-0 z-40'>
-					<div className='md:hidden flex items-center gap-4'>
-						<div className='p-2 border border-gray-100 rounded-lg'>
-							<svg
-								xmlns='http://www.w3.org/2000/svg'
-								width='24'
-								height='24'
-								viewBox='0 0 24 24'
-								fill='none'
-								stroke='currentColor'
-								strokeWidth='2'
-								strokeLinecap='round'
-								strokeLinejoin='round'>
-								<line x1='4' y1='12' x2='20' y2='12'></line>
-								<line x1='4' y1='6' x2='20' y2='6'></line>
-								<line x1='4' y1='18' x2='20' y2='18'></line>
-							</svg>
-						</div>
-					</div>
-
-					<div className='hidden md:block'>
-						<p className='text-sm font-bold text-gray-400 uppercase tracking-widest leading-none mb-1'>
-							Welcome Back
-						</p>
-						<h2 className='text-xl font-black text-gray-900 tracking-tight leading-none italic'>
-							Partner Merchant Dashboard
-						</h2>
-					</div>
-
-					<div className='flex items-center gap-6'>
-						<div className='hidden sm:flex flex-col text-right'>
-							<p className='text-[10px] font-black text-indigo-600 uppercase tracking-widest leading-none mb-1'>
-								Status
-							</p>
-							<p className='text-sm font-black text-gray-900 leading-none'>
-								Online & Verified
-							</p>
-						</div>
-						<div className='w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-100 relative group cursor-pointer transition-all hover:border-indigo-200'>
+				<header className='h-20 md:h-24 bg-white/80 backdrop-blur-md border-b border-gray-50 flex items-center justify-between px-6 md:px-10 sticky top-0 z-40'>
+					<div className='flex items-center gap-4'>
+						<button
+							onClick={() => setIsMobileMenuOpen(true)}
+							className='md:hidden p-2.5 bg-gray-50 border border-gray-100 rounded-xl text-gray-600 active:scale-95 transition-all'>
 							<svg
 								xmlns='http://www.w3.org/2000/svg'
 								width='20'
@@ -250,17 +240,43 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 								stroke='currentColor'
 								strokeWidth='2.5'
 								strokeLinecap='round'
-								strokeLinejoin='round'
-								className='text-gray-400 group-hover:text-indigo-600 transition-colors'>
-								<path d='M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'></path>
-								<path d='M10.3 21a1.94 1.94 0 0 0 3.4 0'></path>
+								strokeLinejoin='round'>
+								<line x1='4' y1='12' x2='20' y2='12'></line>
+								<line x1='4' y1='6' x2='20' y2='6'></line>
+								<line x1='4' y1='18' x2='20' y2='18'></line>
 							</svg>
-							<span className='absolute top-3 right-3 w-2 h-2 bg-rose-500 rounded-full border-2 border-white'></span>
+						</button>
+						<div className='hidden md:block'>
+							<p className='text-sm font-bold text-gray-400 uppercase tracking-widest leading-none mb-1'>
+								Welcome Back
+							</p>
+							<h2 className='text-xl font-black text-gray-900 tracking-tight leading-none italic'>
+								Partner Merchant Dashboard
+							</h2>
+						</div>
+						<div className='md:hidden'>
+							<span className='text-lg font-black text-gray-900 tracking-tighter'>
+								QuickSell
+							</span>
+						</div>
+					</div>
+
+					<div className='flex items-center gap-4 md:gap-6'>
+						<div className='hidden sm:flex flex-col text-right'>
+							<p className='text-[10px] font-black text-indigo-600 uppercase tracking-widest leading-none mb-1'>
+								Status
+							</p>
+							<p className='text-sm font-black text-gray-900 leading-none'>
+								Online & Verified
+							</p>
+						</div>
+						<div className='w-10 h-10 md:w-12 md:h-12 bg-indigo-600 rounded-xl md:rounded-2xl flex items-center justify-center text-white font-black text-sm md:text-base cursor-pointer shadow-lg shadow-indigo-100'>
+							{user?.role?.[0] || "U"}
 						</div>
 					</div>
 				</header>
 
-				<main className='flex-1 p-10 overflow-y-auto'>{children}</main>
+				<main className='flex-1 p-6 md:p-10 overflow-y-auto'>{children}</main>
 			</div>
 		</div>
 	);
