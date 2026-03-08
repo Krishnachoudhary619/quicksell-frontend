@@ -164,7 +164,7 @@ export const useCatalogs = () => {
         }
     };
 
-    const getPublicCatalog = useCallback(async (slug: string) => {
+    const getPublicCatalog = useCallback(async (slug: string, retryCount = 0) => {
         setLoading(true);
         setError(null);
         try {
@@ -176,7 +176,21 @@ export const useCatalogs = () => {
             }
             return response.data;
         } catch (err: any) {
-            const msg = err.response?.data?.message || err.message || "Something went wrong";
+            // Automatic retry once for transient mobile connection issues
+            if (retryCount < 1) {
+                console.warn(`Fetch failed for ${slug}, retrying...`);
+                return getPublicCatalog(slug, retryCount + 1);
+            }
+
+            let msg = "The catalog is currently unavailable. Please check your connection or try again later.";
+            if (err.code === "ECONNABORTED") {
+                msg = "The request timed out. The connection might be slow, please try again.";
+            } else if (err.response?.data?.message) {
+                msg = err.response.data.message;
+            } else if (err.message) {
+                msg = err.message;
+            }
+
             setError(msg);
             throw err;
         } finally {

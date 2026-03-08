@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { CatalogSummary } from "@/modules/catalogs/types/catalog.types";
+import ShareCatalogModal from "./ShareCatalogModal";
 
 interface CatalogTableProps {
 	catalogs: CatalogSummary[];
@@ -20,6 +21,8 @@ export default function CatalogTable({
 	onToggleStatus,
 	loading,
 }: CatalogTableProps) {
+	const [sharingCatalog, setSharingCatalog] = useState<CatalogSummary | null>(null);
+
 	if (loading && catalogs.length === 0) {
 		return (
 			<div className='flex items-center justify-center p-20'>
@@ -113,11 +116,7 @@ export default function CatalogTable({
 								<td className='px-6 py-5'>
 									<div className='flex items-center justify-end gap-2'>
 										<button
-											onClick={() => {
-												const url = `${window.location.origin}/catalog/${catalog.catalog_slug}`;
-												navigator.clipboard.writeText(url);
-												alert("Public link copied to clipboard!");
-											}}
+											onClick={() => setSharingCatalog(catalog)}
 											className='p-2.5 text-blue-500 hover:bg-blue-50 rounded-xl transition-all'
 											title='Share Public Link'>
 											<svg
@@ -198,6 +197,12 @@ export default function CatalogTable({
 					</tbody>
 				</table>
 			</div>
+			{sharingCatalog && (
+				<ShareCatalogModal
+					catalog={sharingCatalog}
+					onClose={() => setSharingCatalog(null)}
+				/>
+			)}
 		</div>
 	);
 }

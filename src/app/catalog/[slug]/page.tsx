@@ -1,21 +1,49 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { useCatalogs } from "@/modules/catalogs/hooks/useCatalogs";
+import { useCartStore } from "@/store/cart.store";
+import { generateWhatsappLink } from "@/utils/whatsapp";
+import ProductDetailModal from "@/components/catalogs/ProductDetailModal";
+import CartDrawer from "@/components/catalogs/CartDrawer";
 
 export default function PublicCatalogPage() {
 	const params = useParams();
 	const slug = params.slug as string;
 	const { publicCatalog, loading, error, getPublicCatalog } = useCatalogs();
+	const { cart, addToCart, increaseQty, decreaseQty, totalItems, totalAmount } = useCartStore();
+	const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+	const [searchQuery, setSearchQuery] = useState("");
+	const [isCartOpen, setIsCartOpen] = useState(false);
+
+	const filteredProducts = useMemo(() => {
+		if (!publicCatalog) return [];
+		if (!searchQuery) return publicCatalog.products;
+		return publicCatalog.products.filter((p) =>
+			p.product_name.toLowerCase().includes(searchQuery.toLowerCase()),
+		);
+	}, [publicCatalog, searchQuery]);
+
+	const getProductQty = (id: string) => {
+		return cart.find((item) => item.id === id)?.quantity || 0;
+	};
 
 	useEffect(() => {
+		let isMounted = true;
 		if (slug) {
-			getPublicCatalog(slug);
+			getPublicCatalog(slug)
+				.then(() => {
+					if (!isMounted) return;
+				})
+				.catch(() => {});
 		}
+		return () => {
+			isMounted = false;
+		};
 	}, [slug, getPublicCatalog]);
 
-	if (loading) {
+	if (loading || (!publicCatalog && !error)) {
 		return (
 			<div className='min-h-screen flex items-center justify-center bg-gray-50'>
 				<div className='flex flex-col items-center gap-4'>
@@ -65,7 +93,7 @@ export default function PublicCatalogPage() {
 	return (
 		<div className='min-h-screen bg-[#FAFAFB]'>
 			{/* Consumer-facing Header */}
-			<header className='bg-white border-b border-gray-100 sticky top-0 z-30 shadow-sm'>
+			<header className='bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm'>
 				<div className='max-w-7xl mx-auto px-6 h-24 flex items-center justify-between'>
 					<div className='flex items-center gap-4'>
 						<div className='w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-100'>
@@ -85,110 +113,293 @@ export default function PublicCatalogPage() {
 							</svg>
 						</div>
 						<div>
-							<h1 className='text-2xl font-black text-gray-900 leading-tight'>
-								Quick Sell
+							<h1 className='text-2xl font-black text-gray-900 leading-tight whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px] sm:max-w-none'>
+								{publicCatalog.catalog_name}
 							</h1>
 							<p className='text-[10px] font-bold text-indigo-600 uppercase tracking-[0.2em]'>
-								Premium Collection
+								QUICK SELL CATALOG
 							</p>
 						</div>
 					</div>
-					<div className='hidden md:flex bg-gray-50 rounded-full px-6 py-2 border border-gray-100 items-center gap-3'>
-						<div className='w-2 h-2 bg-green-500 rounded-full animate-pulse'></div>
-						<span className='text-sm font-bold text-gray-600 uppercase tracking-wider'>
-							Live Catalog
-						</span>
+
+					<div className='flex items-center gap-4'>
+						<button
+							onClick={() => setIsCartOpen(true)}
+							className='relative p-3 bg-gray-50 hover:bg-indigo-50 text-gray-900 hover:text-indigo-600 rounded-2xl transition-all group'>
+							<svg
+								xmlns='http://www.w3.org/2000/svg'
+								width='24'
+								height='24'
+								viewBox='0 0 24 24'
+								fill='none'
+								stroke='currentColor'
+								strokeWidth='2.5'
+								strokeLinecap='round'
+								strokeLinejoin='round'
+								className='group-hover:scale-110 transition-transform'>
+								<path d='M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z'></path>
+								<path d='M3 6h18'></path>
+								<path d='M16 10a4 4 0 0 1-8 0'></path>
+							</svg>
+							{totalItems > 0 && (
+								<span className='absolute -top-1 -right-1 w-6 h-6 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white animate-in zoom-in-50 duration-300'>
+									{totalItems}
+								</span>
+							)}
+						</button>
 					</div>
 				</div>
 			</header>
 
-			<main className='max-w-7xl mx-auto px-6 py-12'>
-				{/* Catalog Title Section */}
-				<div className='mb-16 text-center md:text-left'>
-					<h2 className='text-5xl md:text-6xl font-black text-gray-900 tracking-tighter mb-4'>
-						{publicCatalog.catalog_name}
-					</h2>
-					<div className='h-2 w-24 bg-indigo-600 rounded-full mx-auto md:mx-0 mb-6'></div>
-					<p className='text-gray-400 font-medium text-lg max-w-2xl'>
-						Explore our handpicked selection of premium products curated just for you.
-						Directly order from this digital catalog.
-					</p>
+			<main className='max-w-7xl mx-auto px-6 py-8 md:py-12'>
+				{/* Search & Actions Bar */}
+				<div className='mb-12 flex flex-col md:flex-row gap-6 items-center justify-between'>
+					<div className='relative w-full md:max-w-md'>
+						<div className='absolute inset-y-0 left-6 flex items-center pointer-events-none'>
+							<svg
+								xmlns='http://www.w3.org/2000/svg'
+								width='20'
+								height='20'
+								viewBox='0 0 24 24'
+								fill='none'
+								stroke='currentColor'
+								strokeWidth='2.5'
+								strokeLinecap='round'
+								strokeLinejoin='round'
+								className='text-gray-400'>
+								<circle cx='11' cy='11' r='8'></circle>
+								<line x1='21' y1='21' x2='16.65' y2='16.65'></line>
+							</svg>
+						</div>
+						<input
+							type='text'
+							placeholder='Search products...'
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							className='w-full pl-16 pr-8 py-5 bg-white rounded-[2rem] border border-gray-100 shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-50 focus:border-indigo-200 transition-all font-bold placeholder:text-gray-300'
+						/>
+					</div>
+
+					{totalItems > 0 && (
+						<div className='hidden md:flex items-center gap-4 bg-indigo-50 text-indigo-600 px-6 py-3 rounded-2xl'>
+							<div className='flex flex-col'>
+								<span className='text-[10px] font-black uppercase tracking-widest leading-none'>
+									Subtotal
+								</span>
+								<span className='text-xl font-black'>
+									₹{totalAmount.toLocaleString()}
+								</span>
+							</div>
+							<div className='w-px h-8 bg-indigo-200'></div>
+							<button
+								onClick={() => setIsCartOpen(true)}
+								className='font-black text-sm uppercase tracking-wider hover:underline'>
+								View Cart ({totalItems})
+							</button>
+						</div>
+					)}
 				</div>
 
 				{/* Products Grid */}
 				<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
-					{publicCatalog.products.map((product) => (
-						<div
-							key={product.id}
-							className='group bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-indigo-100 transition-all duration-500 hover:-translate-y-2 overflow-hidden flex flex-col'>
-							{/* Image Container */}
-							<div className='relative aspect-square bg-[#F8F9FD] p-6 overflow-hidden'>
-								<div className='absolute inset-0 bg-indigo-600/0 group-hover:bg-indigo-600/5 transition-colors duration-500'></div>
-								<div className='w-full h-full flex items-center justify-center relative z-10'>
-									{product.thumbnail_url ? (
-										<img
-											src={product.thumbnail_url}
-											alt={product.product_name}
-											className='w-full h-full object-contain group-hover:scale-110 transition-transform duration-700'
-										/>
+					{filteredProducts.map((product) => {
+						const qty = getProductQty(product.id);
+						return (
+							<div
+								key={product.id}
+								onClick={() => setSelectedProduct(product)}
+								className='group bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-indigo-100 transition-all duration-500 hover:-translate-y-2 overflow-hidden flex flex-col cursor-pointer'>
+								{/* Image Container */}
+								<div className='relative aspect-square bg-[#F8F9FD] p-6 overflow-hidden'>
+									<div className='absolute inset-0 bg-indigo-600/0 group-hover:bg-indigo-600/5 transition-colors duration-500'></div>
+									<div className='w-full h-full flex items-center justify-center relative z-10'>
+										{product.thumbnail_url ? (
+											<img
+												src={product.thumbnail_url}
+												alt={product.product_name}
+												className='w-full h-full object-contain group-hover:scale-110 transition-transform duration-700'
+											/>
+										) : (
+											<svg
+												className='text-gray-200 group-hover:text-indigo-100 transition-colors'
+												xmlns='http://www.w3.org/2000/svg'
+												width='80'
+												height='80'
+												viewBox='0 0 24 24'
+												fill='none'
+												stroke='currentColor'
+												strokeWidth='1.5'
+												strokeLinecap='round'
+												strokeLinejoin='round'>
+												<rect
+													x='3'
+													y='3'
+													width='18'
+													height='18'
+													rx='2'
+													ry='2'></rect>
+												<circle cx='8.5' cy='8.5' r='1.5'></circle>
+												<polyline points='21 15 16 10 5 21'></polyline>
+											</svg>
+										)}
+									</div>
+									{/* Price Badge */}
+									<div className='absolute top-4 right-4 px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-white/50 z-20'>
+										<p className='text-lg font-black text-gray-900'>
+											₹{(product.price || 0).toLocaleString()}
+										</p>
+									</div>
+
+									{/* Quick Action Button - Mobile focus */}
+									{qty === 0 ? (
+										<button
+											onClick={(e) => {
+												e.stopPropagation();
+												addToCart(product);
+											}}
+											className='md:hidden absolute bottom-4 right-4 p-4 bg-gray-900 text-white rounded-2xl shadow-xl'>
+											<svg
+												xmlns='http://www.w3.org/2000/svg'
+												width='20'
+												height='20'
+												viewBox='0 0 24 24'
+												fill='none'
+												stroke='currentColor'
+												strokeWidth='3'
+												strokeLinecap='round'
+												strokeLinejoin='round'>
+												<line x1='12' y1='5' x2='12' y2='19'></line>
+												<line x1='5' y1='12' x2='19' y2='12'></line>
+											</svg>
+										</button>
 									) : (
-										<svg
-											className='text-gray-200 group-hover:text-indigo-100 transition-colors'
-											xmlns='http://www.w3.org/2000/svg'
-											width='80'
-											height='80'
-											viewBox='0 0 24 24'
-											fill='none'
-											stroke='currentColor'
-											strokeWidth='1.5'
-											strokeLinecap='round'
-											strokeLinejoin='round'>
-											<rect
-												x='3'
-												y='3'
-												width='18'
-												height='18'
-												rx='2'
-												ry='2'></rect>
-											<circle cx='8.5' cy='8.5' r='1.5'></circle>
-											<polyline points='21 15 16 10 5 21'></polyline>
-										</svg>
+										<div className='md:hidden absolute bottom-4 right-4 flex items-center bg-gray-900 text-white rounded-2xl p-1 shadow-xl'>
+											<button
+												onClick={(e) => {
+													e.stopPropagation();
+													decreaseQty(product.id);
+												}}
+												className='p-3'>
+												<svg
+													xmlns='http://www.w3.org/2000/svg'
+													width='16'
+													height='16'
+													viewBox='0 0 24 24'
+													fill='none'
+													stroke='currentColor'
+													strokeWidth='3'
+													strokeLinecap='round'
+													strokeLinejoin='round'>
+													<line x1='5' y1='12' x2='19' y2='12'></line>
+												</svg>
+											</button>
+											<span className='w-6 text-center font-black'>
+												{qty}
+											</span>
+											<button
+												onClick={(e) => {
+													e.stopPropagation();
+													increaseQty(product.id);
+												}}
+												className='p-3'>
+												<svg
+													xmlns='http://www.w3.org/2000/svg'
+													width='16'
+													height='16'
+													viewBox='0 0 24 24'
+													fill='none'
+													stroke='currentColor'
+													strokeWidth='3'
+													strokeLinecap='round'
+													strokeLinejoin='round'>
+													<line x1='12' y1='5' x2='12' y2='19'></line>
+													<line x1='5' y1='12' x2='19' y2='12'></line>
+												</svg>
+											</button>
+										</div>
 									)}
 								</div>
-								{/* Price Badge */}
-								<div className='absolute top-4 right-4 px-4 py-2 bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-white/50 z-20'>
-									<p className='text-lg font-black text-gray-900'>
-										₹{product.price}
-									</p>
+
+								{/* Content */}
+								<div className='p-8 flex-1 flex flex-col'>
+									<h3 className='text-xl font-bold text-gray-900 mb-6 line-clamp-2 min-h-[3.5rem] leading-snug group-hover:text-indigo-600 transition-colors'>
+										{product.product_name}
+									</h3>
+
+									{qty === 0 ? (
+										<button
+											onClick={(e) => {
+												e.stopPropagation();
+												addToCart(product);
+											}}
+											className='w-full py-4 bg-gray-900 text-white font-black rounded-2xl hover:bg-indigo-600 shadow-lg active:scale-95 transition-all mt-auto flex items-center justify-center gap-2 group/btn'>
+											Add to Cart
+											<svg
+												className='group-hover/btn:rotate-12 transition-transform'
+												xmlns='http://www.w3.org/2000/svg'
+												width='18'
+												height='18'
+												viewBox='0 0 24 24'
+												fill='none'
+												stroke='currentColor'
+												strokeWidth='2.5'
+												strokeLinecap='round'
+												strokeLinejoin='round'>
+												<path d='M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z'></path>
+												<path d='M3 6h18'></path>
+												<path d='M16 10a4 4 0 0 1-8 0'></path>
+											</svg>
+										</button>
+									) : (
+										<div className='flex items-center gap-2 mt-auto p-1 bg-gray-50 rounded-2xl border border-gray-100'>
+											<button
+												onClick={(e) => {
+													e.stopPropagation();
+													decreaseQty(product.id);
+												}}
+												className='flex-1 py-3 flex items-center justify-center bg-white rounded-xl shadow-sm hover:text-rose-500 transition-colors'>
+												<svg
+													xmlns='http://www.w3.org/2000/svg'
+													width='20'
+													height='20'
+													viewBox='0 0 24 24'
+													fill='none'
+													stroke='currentColor'
+													strokeWidth='3'
+													strokeLinecap='round'
+													strokeLinejoin='round'>
+													<line x1='5' y1='12' x2='19' y2='12'></line>
+												</svg>
+											</button>
+											<span className='w-12 text-center font-black text-lg'>
+												{qty}
+											</span>
+											<button
+												onClick={(e) => {
+													e.stopPropagation();
+													increaseQty(product.id);
+												}}
+												className='flex-1 py-3 flex items-center justify-center bg-white rounded-xl shadow-sm hover:text-indigo-600 transition-colors'>
+												<svg
+													xmlns='http://www.w3.org/2000/svg'
+													width='20'
+													height='20'
+													viewBox='0 0 24 24'
+													fill='none'
+													stroke='currentColor'
+													strokeWidth='3'
+													strokeLinecap='round'
+													strokeLinejoin='round'>
+													<line x1='12' y1='5' x2='12' y2='19'></line>
+													<line x1='5' y1='12' x2='19' y2='12'></line>
+												</svg>
+											</button>
+										</div>
+									)}
 								</div>
 							</div>
-
-							{/* Content */}
-							<div className='p-8 flex-1 flex flex-col'>
-								<h3 className='text-xl font-bold text-gray-900 mb-6 line-clamp-2 min-h-[3.5rem] leading-snug group-hover:text-indigo-600 transition-colors'>
-									{product.product_name}
-								</h3>
-
-								<button className='w-full py-4 bg-gray-900 text-white font-black rounded-2xl hover:bg-indigo-600 shadow-lg active:scale-95 transition-all mt-auto flex items-center justify-center gap-2 group/btn'>
-									Buy Now
-									<svg
-										className='group-hover/btn:translate-x-1 transition-transform'
-										xmlns='http://www.w3.org/2000/svg'
-										width='18'
-										height='18'
-										viewBox='0 0 24 24'
-										fill='none'
-										stroke='currentColor'
-										strokeWidth='2.5'
-										strokeLinecap='round'
-										strokeLinejoin='round'>
-										<line x1='5' y1='12' x2='19' y2='12'></line>
-										<polyline points='12 5 19 12 12 19'></polyline>
-									</svg>
-								</button>
-							</div>
-						</div>
-					))}
+						);
+					})}
 				</div>
 
 				{/* Empty State */}
@@ -220,7 +431,7 @@ export default function PublicCatalogPage() {
 			</main>
 
 			{/* Floating Footer for Mobile Context */}
-			<footer className='bg-white border-t border-gray-100 py-12 mt-20'>
+			<footer className='bg-white border-t border-gray-100 py-12 pb-32 mt-20'>
 				<div className='max-w-7xl mx-auto px-6 flex flex-col items-center'>
 					<p className='text-gray-400 font-medium mb-4'>Powered by</p>
 					<div className='flex items-center gap-3 grayscale opacity-50'>
@@ -229,6 +440,75 @@ export default function PublicCatalogPage() {
 					</div>
 				</div>
 			</footer>
+
+			{/* Floating Cart Button Bar */}
+			{totalItems > 0 && (
+				<div className='fixed bottom-8 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg z-50 animate-in slide-in-from-bottom-10 fade-in duration-500'>
+					<div
+						onClick={() => setIsCartOpen(true)}
+						className='bg-gray-900 text-white p-4 rounded-[2.5rem] shadow-2xl shadow-indigo-200 border border-white/10 flex items-center justify-between cursor-pointer group'>
+						<div className='flex items-center gap-4 pl-4'>
+							<div className='relative'>
+								<div className='w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform'>
+									<svg
+										xmlns='http://www.w3.org/2000/svg'
+										width='24'
+										height='24'
+										viewBox='0 0 24 24'
+										fill='none'
+										stroke='currentColor'
+										strokeWidth='2.5'
+										strokeLinecap='round'
+										strokeLinejoin='round'>
+										<path d='M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z'></path>
+										<path d='M3 6h18'></path>
+										<path d='M16 10a4 4 0 0 1-8 0'></path>
+									</svg>
+								</div>
+								<span className='absolute -top-2 -right-2 w-6 h-6 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-gray-900'>
+									{totalItems}
+								</span>
+							</div>
+							<div>
+								<p className='text-[10px] font-black text-indigo-400 uppercase tracking-widest leading-none mb-1'>
+									Cart Total
+								</p>
+								<p className='text-xl font-black tracking-tight leading-none'>
+									₹{(totalAmount || 0).toLocaleString()}
+								</p>
+							</div>
+						</div>
+						<div className='px-8 py-4 bg-indigo-600 group-hover:bg-indigo-500 text-white font-black rounded-[1.5rem] transition-all active:scale-95 flex items-center gap-2'>
+							View Cart
+							<svg
+								xmlns='http://www.w3.org/2000/svg'
+								width='20'
+								height='20'
+								viewBox='0 0 24 24'
+								fill='none'
+								stroke='currentColor'
+								strokeWidth='2.5'
+								strokeLinecap='round'
+								strokeLinejoin='round'
+								className='group-hover:translate-x-1 transition-transform'>
+								<line x1='5' y1='12' x2='19' y2='12'></line>
+								<polyline points='12 5 19 12 12 19'></polyline>
+							</svg>
+						</div>
+					</div>
+				</div>
+			)}
+
+			<ProductDetailModal
+				product={selectedProduct}
+				onClose={() => setSelectedProduct(null)}
+			/>
+
+			<CartDrawer
+				isOpen={isCartOpen}
+				onClose={() => setIsCartOpen(false)}
+				catalogName={publicCatalog.catalog_name}
+			/>
 		</div>
 	);
 }
