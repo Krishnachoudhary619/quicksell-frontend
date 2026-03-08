@@ -2,12 +2,13 @@ import { useState, useCallback } from "react";
 import {
     getMyProfile,
     updateMyProfile,
-    updateShopDetails
+    updateShopDetails,
 } from "@/services/user.service";
-import { UserProfile, UpdateShopRequest } from "@/types/user.types";
+import { UserProfile, UpdateShopRequest, ShopDetails } from "@/types/user.types";
 
 export const useProfile = () => {
     const [profile, setProfile] = useState<UserProfile | null>(null);
+    const [shop, setShop] = useState<ShopDetails | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -18,6 +19,11 @@ export const useProfile = () => {
             const response = await getMyProfile();
             if (response.success && response.data) {
                 setProfile(response.data);
+                // If the profile response includes shop details, set it
+                // Based on common patterns in this project, it might be nested or separate
+                if ((response.data as any).shop) {
+                    setShop((response.data as any).shop);
+                }
             } else {
                 throw new Error(response.message || "Failed to fetch profile");
             }
@@ -56,7 +62,9 @@ export const useProfile = () => {
         setError(null);
         try {
             const response = await updateShopDetails(data);
-            if (!response.success) {
+            if (response.success && response.data) {
+                setShop(response.data);
+            } else if (!response.success) {
                 throw new Error(response.message || "Failed to update shop");
             }
             return response.data;
@@ -71,6 +79,7 @@ export const useProfile = () => {
 
     return {
         profile,
+        shop,
         loading,
         error,
         getProfile,

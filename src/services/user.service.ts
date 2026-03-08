@@ -5,6 +5,7 @@ import {
     UserProfile,
     UpdateMyProfileRequest,
     UpdateShopRequest,
+    ShopDetails,
     StaffUser
 } from "@/types/user.types";
 
@@ -22,7 +23,7 @@ export const updateMyProfile = async (
 
 export const updateShopDetails = async (
     data: UpdateShopRequest
-): Promise<ApiResponse<any>> => {
+): Promise<ApiResponse<ShopDetails>> => {
     const res = await api.patch(ENDPOINTS.USERS.UPDATE_SHOP, data);
     return res.data;
 };
