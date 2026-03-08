@@ -38,10 +38,12 @@ export const ENDPOINTS = {
     },
 
     USERS: {
-        ME: "/users/me",
+        PROFILE: "/users/me",
         UPDATE_PROFILE: "/users/me",
         UPDATE_SHOP: "/users/shop",
-        STAFF: "/users/staff",
+        STAFF_LIST: "/users/staff",
+        CREATE_STAFF: "/users/staff",
+        UPDATE_STAFF_STATUS: (id: string) => `/users/staff/${id}/status`,
     },
 
     UPLOADS: {
