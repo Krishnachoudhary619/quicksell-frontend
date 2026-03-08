@@ -1,13 +1,12 @@
-"use client";
-
-import React from "react";
+import React, { useState } from "react";
 import { Product } from "@/modules/products/types/product.types";
+import StockUpdateModal from "./StockUpdateModal";
 
 interface ProductTableProps {
 	products: Product[];
 	onEdit: (product: Product) => void;
 	onDelete: (id: string) => void;
-	onUpdateStock: (id: string, newStock: number) => void;
+	onUpdateStock: (id: string, newStock: number) => Promise<any>;
 	loading: boolean;
 }
 
@@ -18,6 +17,9 @@ export default function ProductTable({
 	onUpdateStock,
 	loading,
 }: ProductTableProps) {
+	const [updatingId, setUpdatingId] = useState<string | null>(null);
+	const [stockUpdateProduct, setStockUpdateProduct] = useState<Product | null>(null);
+
 	if (products.length === 0 && !loading) {
 		return (
 			<div className='text-center py-20 bg-white rounded-2xl border border-dashed border-gray-200'>
@@ -69,12 +71,12 @@ export default function ProductTable({
 											/>
 										) : (
 											<div className='w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold'>
-												{product.product_name.charAt(0)}
+												{(product.product_name || "?").charAt(0)}
 											</div>
 										)}
 										<div>
 											<div className='font-semibold text-gray-900'>
-												{product.product_name}
+												{product.product_name || "Unknown Product"}
 											</div>
 											<div className='text-xs text-gray-400'>
 												{product.sku_code || "No SKU"}
@@ -89,15 +91,16 @@ export default function ProductTable({
 								</td>
 								<td className='px-6 py-4'>
 									<div className='font-medium text-gray-900'>
-										{product.currency || "₹"} {product.price.toLocaleString()}
+										{product.currency || "₹"}{" "}
+										{(product.price ?? 0).toLocaleString()}
 									</div>
 								</td>
 								<td className='px-6 py-4'>
 									<div className='flex items-center gap-2'>
 										<span
-											className={`w-2 h-2 rounded-full ${product.stock_quantity > 10 ? "bg-green-500" : product.stock_quantity > 0 ? "bg-orange-500" : "bg-red-500"}`}></span>
+											className={`w-2 h-2 rounded-full ${(product.stock_quantity ?? 0) > 10 ? "bg-green-500" : (product.stock_quantity ?? 0) > 0 ? "bg-orange-500" : "bg-red-500"}`}></span>
 										<span className='text-sm text-gray-600 font-medium'>
-											{product.stock_quantity}
+											{product.stock_quantity ?? 0}
 										</span>
 									</div>
 								</td>
@@ -114,8 +117,37 @@ export default function ProductTable({
 								<td className='px-6 py-4 text-right'>
 									<div className='flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity'>
 										<button
+											disabled={!!updatingId}
+											onClick={() => setStockUpdateProduct(product)}
+											className={`p-2 rounded-lg transition-all ${
+												updatingId === product.id
+													? "text-indigo-600 bg-indigo-50"
+													: "text-orange-600 hover:bg-orange-50"
+											} disabled:opacity-50 disabled:cursor-not-allowed`}
+											title='Update Stock'>
+											{updatingId === product.id ? (
+												<div className='w-[18px] h-[18px] border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin'></div>
+											) : (
+												<svg
+													xmlns='http://www.w3.org/2000/svg'
+													width='18'
+													height='18'
+													viewBox='0 0 24 24'
+													fill='none'
+													stroke='currentColor'
+													strokeWidth='2'
+													strokeLinecap='round'
+													strokeLinejoin='round'>
+													<path d='M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z'></path>
+													<path d='m3.3 7 8.7 5 8.7-5'></path>
+													<path d='M12 22V12'></path>
+												</svg>
+											)}
+										</button>
+										<button
+											disabled={!!updatingId}
 											onClick={() => onEdit(product)}
-											className='p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors'
+											className='p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
 											title='Edit Product'>
 											<svg
 												xmlns='http://www.w3.org/2000/svg'
@@ -131,8 +163,9 @@ export default function ProductTable({
 											</svg>
 										</button>
 										<button
+											disabled={!!updatingId}
 											onClick={() => onDelete(product.id)}
-											className='p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors'
+											className='p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
 											title='Delete Product'>
 											<svg
 												xmlns='http://www.w3.org/2000/svg'
@@ -157,6 +190,21 @@ export default function ProductTable({
 					</tbody>
 				</table>
 			</div>
+			{stockUpdateProduct && (
+				<StockUpdateModal
+					product={stockUpdateProduct}
+					onClose={() => setStockUpdateProduct(null)}
+					loading={updatingId === stockUpdateProduct.id}
+					onSubmit={async (id, quantity) => {
+						setUpdatingId(id);
+						try {
+							await onUpdateStock(id, quantity);
+						} finally {
+							setUpdatingId(null);
+						}
+					}}
+				/>
+			)}
 		</div>
 	);
 }

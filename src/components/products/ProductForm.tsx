@@ -61,12 +61,19 @@ export default function ProductForm({
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		const finalData = {
+		const finalData: any = {
 			...formData,
 			price: Number(formData.price) || 0,
-			stock_quantity: Number(formData.stock_quantity) || 0,
 		};
-		onSubmit(finalData as CreateProductRequest);
+
+		if (initialData) {
+			// Remove stock_quantity during update to follow strict API separation
+			delete finalData.stock_quantity;
+			onSubmit(finalData as UpdateProductRequest);
+		} else {
+			finalData.stock_quantity = Number(formData.stock_quantity) || 0;
+			onSubmit(finalData as CreateProductRequest);
+		}
 	};
 
 	return (
@@ -147,11 +154,19 @@ export default function ProductForm({
 							required
 							type='number'
 							name='stock_quantity'
+							disabled={!!initialData}
 							value={formData.stock_quantity ?? ""}
 							onChange={handleChange}
 							placeholder='0'
-							className='w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all placeholder:text-gray-400'
+							className={`w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all placeholder:text-gray-400 ${
+								initialData ? "opacity-50 cursor-not-allowed" : ""
+							}`}
 						/>
+						{initialData && (
+							<p className='text-[10px] text-gray-400 mt-1 ml-1 font-medium italic'>
+								* Use "Update Stock" in the table to manage inventory.
+							</p>
+						)}
 					</div>
 
 					<div className='space-y-2'>

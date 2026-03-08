@@ -85,9 +85,9 @@ export const useProducts = () => {
             const response = await productService.updateProduct(id, data);
             if (response.success && response.data) {
                 setProducts((prev) =>
-                    prev.map((p) => (p.id === id ? response.data! : p))
+                    prev.map((p) => (p.id === id ? { ...p, ...response.data! } : p))
                 );
-                if (product?.id === id) setProduct(response.data);
+                if (product?.id === id) setProduct((prev) => (prev ? { ...prev, ...response.data! } : response.data!));
             } else {
                 throw new Error(response.message || "Failed to update product");
             }
@@ -129,9 +129,9 @@ export const useProducts = () => {
             const response = await productService.updateStock(id, stock_quantity);
             if (response.success && response.data) {
                 setProducts((prev) =>
-                    prev.map((p) => (p.id === id ? response.data! : p))
+                    prev.map((p) => (p.id === id ? { ...p, ...response.data! } : p))
                 );
-                if (product?.id === id) setProduct(response.data);
+                if (product?.id === id) setProduct((prev) => (prev ? { ...prev, ...response.data! } : response.data!));
             } else {
                 throw new Error(response.message || "Failed to update stock");
             }
