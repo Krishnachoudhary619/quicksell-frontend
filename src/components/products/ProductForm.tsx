@@ -6,6 +6,8 @@ import {
 	UpdateProductRequest,
 	Product,
 } from "@/modules/products/types/product.types";
+import { useUpload } from "@/modules/uploads/hooks/useUpload";
+import Image from "next/image";
 
 interface ProductFormProps {
 	initialData?: Product | null;
@@ -29,7 +31,13 @@ export default function ProductForm({
 		category: "",
 		is_active: true,
 		currency: "INR",
+		thumbnail_url: "",
 	});
+
+	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+	const [previewUrl, setPreviewUrl] = useState<string>("");
+	const { uploadSingleFile, uploading: s3Uploading } = useUpload();
+	const [isUploadingImage, setIsUploadingImage] = useState(false);
 
 	useEffect(() => {
 		if (initialData) {
@@ -42,7 +50,11 @@ export default function ProductForm({
 				category: initialData.category || "",
 				is_active: initialData.is_active,
 				currency: initialData.currency || "INR",
+				thumbnail_url: initialData.thumbnail_url || "",
 			});
+			if (initialData.thumbnail_url) {
+				setPreviewUrl(initialData.thumbnail_url);
+			}
 		}
 	}, [initialData]);
 
@@ -59,20 +71,54 @@ export default function ProductForm({
 		}));
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		const finalData: any = {
-			...formData,
-			price: Number(formData.price) || 0,
-		};
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (file) {
+			setSelectedFile(file);
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setPreviewUrl(reader.result as string);
+			};
+			reader.readAsDataURL(file);
+		}
+	};
 
-		if (initialData) {
-			// Remove stock_quantity during update to follow strict API separation
-			delete finalData.stock_quantity;
-			onSubmit(finalData as UpdateProductRequest);
-		} else {
-			finalData.stock_quantity = Number(formData.stock_quantity) || 0;
-			onSubmit(finalData as CreateProductRequest);
+	const removeImage = () => {
+		setSelectedFile(null);
+		setPreviewUrl("");
+		setFormData((prev) => ({ ...prev, thumbnail_url: "" }));
+	};
+
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		setIsUploadingImage(true);
+
+		try {
+			let thumbnailUrl = formData.thumbnail_url;
+
+			// If a new file was selected, upload it first
+			if (selectedFile) {
+				thumbnailUrl = await uploadSingleFile(selectedFile);
+			}
+
+			const finalData: any = {
+				...formData,
+				price: Number(formData.price) || 0,
+				thumbnail_url: thumbnailUrl,
+			};
+
+			if (initialData) {
+				delete finalData.stock_quantity;
+				onSubmit(finalData as UpdateProductRequest);
+			} else {
+				finalData.stock_quantity = Number(formData.stock_quantity) || 0;
+				onSubmit(finalData as CreateProductRequest);
+			}
+		} catch (error) {
+			console.error("Submission failed:", error);
+			alert("Failed to upload image. Please try again.");
+		} finally {
+			setIsUploadingImage(false);
 		}
 	};
 
@@ -101,11 +147,96 @@ export default function ProductForm({
 				</button>
 			</div>
 
-			<form onSubmit={handleSubmit} className='space-y-6'>
-				<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+			<form onSubmit={handleSubmit} className='space-y-8'>
+				{/* Image Upload Area */}
+				<div className='space-y-4'>
+					<label className='text-sm font-black text-gray-400 uppercase tracking-widest ml-1'>
+						Product Representation
+					</label>
+
+					<div
+						className={`relative w-full aspect-[4/3] md:aspect-video rounded-[2.5rem] border-2 border-dashed transition-all flex flex-col items-center justify-center overflow-hidden group
+							${previewUrl ? "border-transparent" : "border-gray-200 bg-gray-50/50 hover:bg-indigo-50/30 hover:border-indigo-200"}
+						`}>
+						{previewUrl ? (
+							<>
+								<Image
+									src={previewUrl}
+									alt='Preview'
+									fill
+									className='object-cover'
+								/>
+								<div className='absolute inset-0 bg-gray-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-sm'>
+									<button
+										type='button'
+										onClick={() =>
+											document.getElementById("product-image-input")?.click()
+										}
+										className='p-4 bg-white text-gray-900 rounded-2xl font-black shadow-xl hover:scale-110 active:scale-95 transition-all text-xs uppercase tracking-widest'>
+										Replace
+									</button>
+									<button
+										type='button'
+										onClick={removeImage}
+										className='p-4 bg-rose-500 text-white rounded-2xl font-black shadow-xl hover:scale-110 active:scale-95 transition-all text-xs uppercase tracking-widest'>
+										Remove
+									</button>
+								</div>
+							</>
+						) : (
+							<button
+								type='button'
+								onClick={() =>
+									document.getElementById("product-image-input")?.click()
+								}
+								className='flex flex-col items-center gap-4 text-gray-400 hover:text-indigo-600 transition-colors'>
+								<div className='w-16 h-16 bg-white rounded-3xl flex items-center justify-center shadow-2xl shadow-indigo-100/50'>
+									<svg
+										xmlns='http://www.w3.org/2000/svg'
+										width='28'
+										height='28'
+										viewBox='0 0 24 24'
+										fill='none'
+										stroke='currentColor'
+										strokeWidth='2.5'
+										strokeLinecap='round'
+										strokeLinejoin='round'>
+										<rect
+											x='3'
+											y='3'
+											width='18'
+											height='18'
+											rx='2'
+											ry='2'></rect>
+										<circle cx='8.5' cy='8.5' r='1.5'></circle>
+										<polyline points='21 15 16 10 5 21'></polyline>
+									</svg>
+								</div>
+								<div className='text-center'>
+									<p className='font-black text-xs uppercase tracking-widest'>
+										Tap to Upload Image
+									</p>
+									<p className='text-[10px] font-bold opacity-60 mt-1 italic'>
+										JPG, PNG (Max 5MB)
+									</p>
+								</div>
+							</button>
+						)}
+
+						<input
+							id='product-image-input'
+							type='file'
+							accept='image/*'
+							onChange={handleFileChange}
+							className='hidden'
+						/>
+					</div>
+				</div>
+
+				<div className='grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6'>
 					<div className='space-y-2'>
-						<label className='text-sm font-semibold text-gray-700 ml-1'>
-							Product Name
+						<label className='text-xs font-black text-gray-400 uppercase tracking-widest ml-1'>
+							Product Identity
 						</label>
 						<input
 							required
@@ -113,25 +244,29 @@ export default function ProductForm({
 							value={formData.product_name}
 							onChange={handleChange}
 							placeholder='e.g. Wireless Headphones'
-							className='w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all placeholder:text-gray-400'
+							className='w-full px-4 py-3.5 rounded-2xl bg-gray-50 border border-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all placeholder:text-gray-400 font-bold'
 						/>
 					</div>
 
 					<div className='space-y-2'>
-						<label className='text-sm font-semibold text-gray-700 ml-1'>SKU Code</label>
+						<label className='text-xs font-black text-gray-400 uppercase tracking-widest ml-1'>
+							SKU Reference
+						</label>
 						<input
 							name='sku_code'
 							value={formData.sku_code}
 							onChange={handleChange}
 							placeholder='e.g. WH-1000XM4'
-							className='w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all placeholder:text-gray-400'
+							className='w-full px-4 py-3.5 rounded-2xl bg-gray-50 border border-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all placeholder:text-gray-400 font-bold'
 						/>
 					</div>
 
 					<div className='space-y-2'>
-						<label className='text-sm font-semibold text-gray-700 ml-1'>Price</label>
+						<label className='text-xs font-black text-gray-400 uppercase tracking-widest ml-1'>
+							Sale Price (INR)
+						</label>
 						<div className='relative'>
-							<span className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium tracking-tight'>
+							<span className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-black tracking-tight'>
 								₹
 							</span>
 							<input
@@ -141,14 +276,14 @@ export default function ProductForm({
 								value={formData.price ?? ""}
 								onChange={handleChange}
 								placeholder='0.00'
-								className='w-full pl-8 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all placeholder:text-gray-400'
+								className='w-full pl-8 pr-4 py-3.5 rounded-2xl bg-gray-50 border border-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all placeholder:text-gray-400 font-bold'
 							/>
 						</div>
 					</div>
 
 					<div className='space-y-2'>
-						<label className='text-sm font-semibold text-gray-700 ml-1'>
-							Stock Quantity
+						<label className='text-xs font-black text-gray-400 uppercase tracking-widest ml-1'>
+							Inventory Level
 						</label>
 						<input
 							required
@@ -158,7 +293,7 @@ export default function ProductForm({
 							value={formData.stock_quantity ?? ""}
 							onChange={handleChange}
 							placeholder='0'
-							className={`w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all placeholder:text-gray-400 ${
+							className={`w-full px-4 py-3.5 rounded-2xl bg-gray-50 border border-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all placeholder:text-gray-400 font-bold ${
 								initialData ? "opacity-50 cursor-not-allowed" : ""
 							}`}
 						/>
@@ -170,13 +305,15 @@ export default function ProductForm({
 					</div>
 
 					<div className='space-y-2'>
-						<label className='text-sm font-semibold text-gray-700 ml-1'>Category</label>
+						<label className='text-xs font-black text-gray-400 uppercase tracking-widest ml-1'>
+							Classification
+						</label>
 						<input
 							name='category'
 							value={formData.category}
 							onChange={handleChange}
 							placeholder='e.g. Electronics'
-							className='w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all placeholder:text-gray-400'
+							className='w-full px-4 py-3.5 rounded-2xl bg-gray-50 border border-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all placeholder:text-gray-400 font-bold'
 						/>
 					</div>
 
@@ -189,23 +326,25 @@ export default function ProductForm({
 								onChange={handleChange}
 								className='sr-only peer'
 							/>
-							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-							<span className='ml-3 text-sm font-semibold text-gray-700 tracking-tight'>
-								Set as Active
+							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-900"></div>
+							<span className='ml-3 text-xs font-black text-gray-700 uppercase tracking-widest'>
+								Live Status
 							</span>
 						</label>
 					</div>
 				</div>
 
 				<div className='space-y-2'>
-					<label className='text-sm font-semibold text-gray-700 ml-1'>Description</label>
+					<label className='text-xs font-black text-gray-400 uppercase tracking-widest ml-1'>
+						Detailed Overview
+					</label>
 					<textarea
 						name='description'
 						value={formData.description}
 						onChange={handleChange}
 						placeholder='Tell us more about this product...'
 						rows={4}
-						className='w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all placeholder:text-gray-400 resize-none'
+						className='w-full px-4 py-3.5 rounded-2xl bg-gray-50 border border-gray-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all placeholder:text-gray-400 resize-none font-bold'
 					/>
 				</div>
 
@@ -218,17 +357,17 @@ export default function ProductForm({
 					</button>
 					<button
 						type='submit'
-						disabled={loading}
-						className='flex-2 px-6 py-3.5 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:shadow-indigo-200 transition-all text-sm tracking-tight disabled:opacity-50 disabled:cursor-not-allowed'>
-						{loading ? (
-							<div className='flex items-center justify-center gap-2'>
+						disabled={loading || isUploadingImage || s3Uploading}
+						className='flex-[2] px-6 py-4 bg-gray-900 text-white font-black rounded-[1.5rem] shadow-2xl shadow-gray-200 hover:bg-gray-800 transition-all text-xs uppercase tracking-[0.2em] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed'>
+						{loading || isUploadingImage || s3Uploading ? (
+							<div className='flex items-center justify-center gap-3'>
 								<span className='w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin'></span>
-								Processing...
+								<span className='animate-pulse'>Saving Product...</span>
 							</div>
 						) : initialData ? (
-							"Save Changes"
+							"Update Details"
 						) : (
-							"Create Product"
+							"Register Product"
 						)}
 					</button>
 				</div>
