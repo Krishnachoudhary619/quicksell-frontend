@@ -115,7 +115,7 @@ export default function ProductTable({
 									</span>
 								</td>
 								<td className='px-6 py-4 text-right'>
-									<div className='flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity'>
+									<div className='flex justify-end gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity'>
 										<button
 											disabled={!!updatingId}
 											onClick={() => setStockUpdateProduct(product)}
