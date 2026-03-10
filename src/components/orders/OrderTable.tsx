@@ -40,71 +40,120 @@ export default function OrderTable({ orders, onViewDetails, loading }: OrderTabl
 	}
 
 	return (
-		<div className='bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden'>
-			<div className='overflow-x-auto'>
-				<table className='w-full text-left border-collapse'>
-					<thead>
-						<tr className='bg-gray-50/50 border-b border-gray-100'>
-							<th className='px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest'>
-								Order ID
-							</th>
-							<th className='px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest'>
-								Date
-							</th>
-							<th className='px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest text-center'>
-								Items
-							</th>
-							<th className='px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest text-right'>
-								Actions
-							</th>
-						</tr>
-					</thead>
-					<tbody className='divide-y divide-gray-50'>
-						{orders.map((order) => (
-							<tr
-								key={order.id}
-								className='hover:bg-gray-50/50 transition-colors group'>
-								<td className='px-8 py-5'>
-									<span className='font-mono text-sm font-bold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-lg'>
-										#{order.id.slice(0, 8).toUpperCase()}
-									</span>
-								</td>
-								<td className='px-8 py-5'>
-									<div className='text-sm font-semibold text-gray-700'>
-										{format(new Date(order.created_at), "MMM d, yyyy")}
-									</div>
-									<div className='text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5'>
-										{format(new Date(order.created_at), "hh:mm aa")}
-									</div>
-								</td>
-								<td className='px-8 py-5 text-center'>
-									<span className='px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-black rounded-full'>
-										{order.total_items} Items
-									</span>
-								</td>
-								<td className='px-8 py-5 text-right'>
-									<button
-										onClick={() => onViewDetails(order.id)}
-										className='inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-xs font-bold rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm active:scale-95'>
-										View Details
-										<svg
-											xmlns='http://www.w3.org/2000/svg'
-											width='14'
-											height='14'
-											viewBox='0 0 24 24'
-											fill='none'
-											stroke='currentColor'
-											strokeWidth='2.5'
-											strokeLinecap='round'
-											strokeLinejoin='round'>
-											<path d='m9 18 6-6-6-6' />
-										</svg>
-									</button>
-								</td>
+		<div className='space-y-4'>
+			{/* Mobile Card Layout */}
+			<div className='grid grid-cols-1 gap-4 md:hidden'>
+				{orders.map((order) => (
+					<div
+						key={order.id}
+						className='bg-white rounded-2xl border border-gray-100 p-5 space-y-4 shadow-sm'>
+						<div className='flex items-center justify-between'>
+							<div>
+								<span className='font-mono text-[10px] font-black text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg uppercase tracking-wider'>
+									#{order.id.slice(0, 8).toUpperCase()}
+								</span>
+								<p className='text-sm font-black text-gray-900 mt-3'>
+									{order.total_items} {order.total_items === 1 ? "Item" : "Items"}
+								</p>
+							</div>
+							<div className='text-right'>
+								<p className='text-sm font-black text-gray-900'>
+									{format(new Date(order.created_at), "MMM d, yyyy")}
+								</p>
+								<p className='text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5'>
+									{format(new Date(order.created_at), "hh:mm aa")}
+								</p>
+							</div>
+						</div>
+
+						<button
+							onClick={() => onViewDetails(order.id)}
+							className='w-full h-11 flex items-center justify-center gap-2 bg-gray-900 text-white font-black text-xs rounded-xl hover:bg-gray-800 transition-all active:scale-[0.98]'>
+							View Detailed Order
+							<svg
+								xmlns='http://www.w3.org/2000/svg'
+								width='16'
+								height='16'
+								viewBox='0 0 24 24'
+								fill='none'
+								stroke='currentColor'
+								strokeWidth='2.5'
+								strokeLinecap='round'
+								strokeLinejoin='round'>
+								<path d='m9 18 6-6-6-6' />
+							</svg>
+						</button>
+					</div>
+				))}
+			</div>
+
+			{/* Desktop Table Layout */}
+			<div className='hidden md:block bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden'>
+				<div className='overflow-x-auto'>
+					<table className='w-full text-left border-collapse'>
+						<thead>
+							<tr className='bg-gray-50/50 border-b border-gray-100'>
+								<th className='px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest'>
+									Order ID
+								</th>
+								<th className='px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest'>
+									Date
+								</th>
+								<th className='px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest text-center'>
+									Items
+								</th>
+								<th className='px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest text-right'>
+									Actions
+								</th>
 							</tr>
-						))}
-					</tbody>
-				</table>
+						</thead>
+						<tbody className='divide-y divide-gray-50'>
+							{orders.map((order) => (
+								<tr
+									key={order.id}
+									className='hover:bg-gray-50/50 transition-colors group'>
+									<td className='px-8 py-5'>
+										<span className='font-mono text-sm font-bold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-lg'>
+											#{order.id.slice(0, 8).toUpperCase()}
+										</span>
+									</td>
+									<td className='px-8 py-5'>
+										<div className='text-sm font-semibold text-gray-700'>
+											{format(new Date(order.created_at), "MMM d, yyyy")}
+										</div>
+										<div className='text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5'>
+											{format(new Date(order.created_at), "hh:mm aa")}
+										</div>
+									</td>
+									<td className='px-8 py-5 text-center'>
+										<span className='px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-black rounded-full'>
+											{order.total_items} Items
+										</span>
+									</td>
+									<td className='px-8 py-5 text-right'>
+										<button
+											onClick={() => onViewDetails(order.id)}
+											className='inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-xs font-bold rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm active:scale-95'>
+											View Details
+											<svg
+												xmlns='http://www.w3.org/2000/svg'
+												width='14'
+												height='14'
+												viewBox='0 0 24 24'
+												fill='none'
+												stroke='currentColor'
+												strokeWidth='2.5'
+												strokeLinecap='round'
+												strokeLinejoin='round'>
+												<path d='m9 18 6-6-6-6' />
+											</svg>
+										</button>
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 	);

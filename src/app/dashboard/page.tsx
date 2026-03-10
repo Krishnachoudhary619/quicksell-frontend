@@ -365,7 +365,7 @@ export default function DashboardPage() {
 						</div>
 					</div>
 
-					{/* Notification/Banner Card */}
+					{/* Notification/Banner Card
 					<div className='bg-indigo-600 rounded-2xl p-6 text-white shadow-lg shadow-indigo-200'>
 						<h3 className='font-black text-lg leading-tight mb-2'>
 							Unlock Premium Features
@@ -377,7 +377,7 @@ export default function DashboardPage() {
 						<button className='w-full py-2.5 bg-white text-indigo-600 font-black text-sm rounded-xl hover:bg-indigo-50 transition-colors'>
 							Upgrade Now
 						</button>
-					</div>
+					</div> */}
 				</div>
 			</div>
 		</div>

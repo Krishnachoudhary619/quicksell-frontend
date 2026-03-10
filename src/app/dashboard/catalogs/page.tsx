@@ -86,7 +86,7 @@ export default function CatalogsPage() {
 	};
 
 	return (
-		<div className='p-8 max-w-7xl mx-auto space-y-10'>
+		<div className='space-y-10'>
 			{/* Header Section */}
 			<div className='flex flex-col md:flex-row md:items-center justify-between gap-6'>
 				<div>

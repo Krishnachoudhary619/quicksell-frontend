@@ -31,7 +31,7 @@ export default function ProfilePage() {
 	};
 
 	return (
-		<main className='p-8'>
+		<div className='space-y-10'>
 			<div className='max-w-4xl mx-auto mb-10'>
 				<h1 className='text-3xl font-black text-gray-900 tracking-tight mb-2'>Setting</h1>
 				<p className='text-gray-400 font-medium'>
@@ -66,6 +66,6 @@ export default function ProfilePage() {
 					{error}
 				</div>
 			)}
-		</main>
+		</div>
 	);
 }

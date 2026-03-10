@@ -38,7 +38,7 @@ export default function StaffPage() {
 	};
 
 	return (
-		<main className='p-8'>
+		<div className='space-y-10'>
 			<h1 className='text-2xl font-bold mb-6'>Staff Management</h1>
 
 			{error && (
@@ -56,7 +56,7 @@ export default function StaffPage() {
 				loading={loading}
 			/>
 
-			<div className='mt-8'>
+			<div className='space-y-10'>
 				<h3 className='text-lg font-semibold mb-4'>Existing Staff</h3>
 				<StaffList
 					staff={staffList}
@@ -64,6 +64,6 @@ export default function StaffPage() {
 					loading={loading}
 				/>
 			</div>
-		</main>
+		</div>
 	);
 }
