@@ -2,7 +2,7 @@ export interface UserProfile {
     id: string;
     name: string;
     phone: string;
-    role: "ADMIN" | "STAFF";
+    role: "ADMIN" | "STAFF" | "OWNER";
     shop_id: string;
 }
 
@@ -17,6 +17,7 @@ export interface ShopDetails {
     shop_email?: string;
     shop_address?: string;
     shop_logo_url?: string;
+    shop_images?: string[];
     is_active?: boolean;
 }
 
