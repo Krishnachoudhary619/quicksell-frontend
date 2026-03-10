@@ -133,17 +133,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 			{/* Sidebar (Desktop & Mobile) */}
 			<aside
 				className={`
-				w-72 bg-white border-r border-gray-100 flex flex-col h-screen sticky top-0 z-[101] overflow-y-auto
+				w-64 bg-white border-r border-gray-100 flex flex-col h-screen sticky top-0 z-[101] overflow-y-auto
 				transition-transform duration-300 md:translate-x-0
 				${isMobileMenuOpen ? "translate-x-0 fixed" : "-translate-x-full absolute md:relative"}
 			`}>
-				<div className='p-8 md:p-10 flex items-center justify-between'>
+				<div className='p-6 md:p-8 flex items-center justify-between'>
 					<div className='flex items-center gap-3'>
-						<div className='w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center text-white shadow-lg'>
+						<div className='w-9 h-9 bg-gray-900 rounded-xl flex items-center justify-center text-white shadow-lg'>
 							<svg
 								xmlns='http://www.w3.org/2000/svg'
-								width='24'
-								height='24'
+								width='20'
+								height='20'
 								viewBox='0 0 24 24'
 								fill='none'
 								stroke='currentColor'
@@ -155,7 +155,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 								<path d='M16 10a4 4 0 0 1-8 0'></path>
 							</svg>
 						</div>
-						<span className='text-xl font-black text-gray-900 tracking-tighter'>
+						<span className='text-lg font-black text-gray-900 tracking-tighter'>
 							QuickSell
 						</span>
 					</div>
@@ -164,8 +164,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 						className='md:hidden p-2 text-gray-400 hover:text-gray-900'>
 						<svg
 							xmlns='http://www.w3.org/2000/svg'
-							width='24'
-							height='24'
+							width='20'
+							height='20'
 							viewBox='0 0 24 24'
 							fill='none'
 							stroke='currentColor'
@@ -178,7 +178,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 					</button>
 				</div>
 
-				<nav className='flex-1 px-6 space-y-2'>
+				<nav className='flex-1 px-4 space-y-1.5'>
 					{NAV_ITEMS.map((item) => {
 						const isActive = pathname === item.href;
 						return (
@@ -186,28 +186,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 								key={item.href}
 								href={item.href}
 								onClick={() => setIsMobileMenuOpen(false)}
-								className={`flex items-center gap-4 px-6 py-4 rounded-2xl font-black transition-all ${
+								className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${
 									isActive
-										? "bg-indigo-600 text-white shadow-xl shadow-indigo-100"
-										: "text-gray-400 hover:bg-indigo-50 hover:text-indigo-600"
+										? "bg-indigo-600 text-white shadow-lg shadow-indigo-100"
+										: "text-gray-400 hover:bg-gray-50 hover:text-indigo-600"
 								}`}>
-								{item.icon}
-								<span className='text-sm uppercase tracking-widest'>
-									{item.label}
+								<span
+									className={
+										isActive
+											? "text-white"
+											: "text-gray-400 group-hover:text-indigo-600"
+									}>
+									{item.icon}
 								</span>
+								<span className='text-[13px] tracking-tight'>{item.label}</span>
 							</Link>
 						);
 					})}
 				</nav>
 
-				<div className='p-8'>
+				<div className='p-6'>
 					<button
 						onClick={logout}
-						className='w-full flex items-center gap-4 px-8 py-4 text-rose-500 font-bold hover:bg-rose-50 rounded-2xl transition-all group'>
+						className='w-full flex items-center gap-3 px-4 py-3 text-rose-500 font-bold hover:bg-rose-50 rounded-xl transition-all group'>
 						<svg
 							xmlns='http://www.w3.org/2000/svg'
-							width='20'
-							height='20'
+							width='18'
+							height='18'
 							viewBox='0 0 24 24'
 							fill='none'
 							stroke='currentColor'
@@ -219,22 +224,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 							<polyline points='16 17 21 12 16 7'></polyline>
 							<line x1='21' y1='12' x2='9' y2='12'></line>
 						</svg>
-						<span className='text-sm uppercase tracking-widest'>Sign Out</span>
+						<span className='text-[13px] tracking-tight'>Sign Out</span>
 					</button>
 				</div>
 			</aside>
 
 			<div className='flex-1 flex flex-col'>
 				{/* Top Header */}
-				<header className='h-20 md:h-24 bg-white/80 backdrop-blur-md border-b border-gray-50 flex items-center justify-between px-6 md:px-10 sticky top-0 z-40'>
+				<header className='h-16 md:h-20 bg-white/80 backdrop-blur-md border-b border-gray-50 flex items-center justify-between px-6 md:px-8 sticky top-0 z-40'>
 					<div className='flex items-center gap-4'>
 						<button
 							onClick={() => setIsMobileMenuOpen(true)}
-							className='md:hidden p-2.5 bg-gray-50 border border-gray-100 rounded-xl text-gray-600 active:scale-95 transition-all'>
+							className='md:hidden p-2 bg-gray-50 border border-gray-100 rounded-xl text-gray-600 active:scale-95 transition-all'>
 							<svg
 								xmlns='http://www.w3.org/2000/svg'
-								width='20'
-								height='20'
+								width='18'
+								height='18'
 								viewBox='0 0 24 24'
 								fill='none'
 								stroke='currentColor'
@@ -247,10 +252,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 							</svg>
 						</button>
 						<div className='hidden md:block'>
-							<p className='text-sm font-bold text-gray-400 uppercase tracking-widest leading-none mb-1'>
+							<p className='text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1 opacity-70'>
 								Welcome Back
 							</p>
-							<h2 className='text-xl font-black text-gray-900 tracking-tight leading-none italic'>
+							<h2 className='text-lg font-black text-gray-900 tracking-tight leading-none italic'>
 								Partner Merchant Dashboard
 							</h2>
 						</div>
@@ -263,14 +268,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
 					<div className='flex items-center gap-4 md:gap-6'>
 						<div className='hidden sm:flex flex-col text-right'>
-							<p className='text-[10px] font-black text-indigo-600 uppercase tracking-widest leading-none mb-1'>
+							<p className='text-[9px] font-black text-indigo-600 uppercase tracking-widest leading-none mb-1'>
 								Status
 							</p>
-							<p className='text-sm font-black text-gray-900 leading-none'>
+							<p className='text-[13px] font-black text-gray-900 leading-none'>
 								Online & Verified
 							</p>
 						</div>
-						<div className='w-10 h-10 md:w-12 md:h-12 bg-indigo-600 rounded-xl md:rounded-2xl flex items-center justify-center text-white font-black text-sm md:text-base cursor-pointer shadow-lg shadow-indigo-100'>
+						<div className='w-9 h-9 md:w-10 md:h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-xs md:text-sm cursor-pointer shadow-lg shadow-indigo-100'>
 							{user?.role?.[0] || "U"}
 						</div>
 					</div>
