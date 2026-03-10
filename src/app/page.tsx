@@ -1,5 +1,653 @@
 export default function Home() {
 	return (
+		<div>
+			<>
+				<meta charSet='UTF-8' />
+				<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+				<title>QuickShare — Digital Catalogs for B2B Commerce</title>
+				<link rel='preconnect' href='https://fonts.googleapis.com' />
+				<link rel='preconnect' href='https://fonts.gstatic.com' crossOrigin='' />
+				<link
+					href='https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap'
+					rel='stylesheet'
+				/>
+				<link
+					rel='stylesheet'
+					href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+				/>
+				<style
+					dangerouslySetInnerHTML={{
+						__html: "\n    /* ─── Reset & Base ─── */\n    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }\n    html { scroll-behavior: smooth; font-size: 16px; }\n    body {\n      font-family: 'DM Sans', sans-serif;\n      background: #f8f5f0;\n      color: #1a1a1a;\n      overflow-x: hidden;\n      line-height: 1.6;\n    }\n\n    /* ─── Design Tokens ─── */\n    :root {\n      --ink: #0f0e0d;\n      --ink-2: #3d3b38;\n      --ink-3: #7a7570;\n      --cream: #f8f5f0;\n      --cream-2: #f0ece4;\n      --cream-3: #e8e2d8;\n      --accent: #e85d26;\n      --accent-2: #f07b47;\n      --accent-bg: #fdf0ea;\n      --green: #1a6b4a;\n      --green-light: #e6f4ee;\n      --white: #ffffff;\n      --shadow-sm: 0 2px 8px rgba(15,14,13,0.07);\n      --shadow-md: 0 8px 24px rgba(15,14,13,0.1);\n      --shadow-lg: 0 24px 64px rgba(15,14,13,0.12);\n      --radius: 12px;\n      --radius-lg: 20px;\n      --radius-xl: 32px;\n    }\n\n    /* ─── Utility ─── */\n    .container { max-width: 1180px; margin: 0 auto; padding: 0 2rem; }\n    .text-center { text-align: center; }\n    .eyebrow {\n      display: inline-flex; align-items: center; gap: 0.5rem;\n      font-family: 'DM Sans', sans-serif;\n      font-size: 0.75rem; font-weight: 500; letter-spacing: 0.12em;\n      text-transform: uppercase; color: var(--accent);\n      background: var(--accent-bg); border: 1px solid rgba(232,93,38,0.15);\n      padding: 0.35rem 0.85rem; border-radius: 100px;\n      margin-bottom: 1.25rem;\n    }\n    .eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; }\n\n    /* ─── Buttons ─── */\n    .btn {\n      display: inline-flex; align-items: center; gap: 0.5rem;\n      padding: 0.85rem 1.75rem; border-radius: 100px;\n      font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500;\n      text-decoration: none; cursor: pointer; border: none;\n      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n      white-space: nowrap;\n    }\n    .btn-primary {\n      background: var(--ink); color: var(--white);\n      box-shadow: 0 4px 16px rgba(15,14,13,0.2);\n    }\n    .btn-primary:hover { background: #2a2825; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15,14,13,0.25); }\n    .btn-accent {\n      background: var(--accent); color: var(--white);\n      box-shadow: 0 4px 16px rgba(232,93,38,0.3);\n    }\n    .btn-accent:hover { background: #d14f1e; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,93,38,0.4); }\n    .btn-ghost {\n      background: transparent; color: var(--ink-2);\n      border: 1.5px solid var(--cream-3);\n    }\n    .btn-ghost:hover { background: var(--cream-2); border-color: var(--ink-3); }\n    .btn-lg { padding: 1rem 2.25rem; font-size: 1rem; }\n    .btn svg, .btn i { font-size: 0.9em; }\n\n    /* ─── Navbar ─── */\n    .navbar {\n      position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;\n      padding: 1.1rem 0;\n      background: rgba(248, 245, 240, 0.88);\n      backdrop-filter: blur(16px);\n      -webkit-backdrop-filter: blur(16px);\n      border-bottom: 1px solid rgba(15,14,13,0.06);\n      transition: all 0.3s ease;\n    }\n    .navbar.scrolled {\n      padding: 0.75rem 0;\n      box-shadow: 0 4px 24px rgba(15,14,13,0.07);\n    }\n    .nav-inner {\n      display: flex; align-items: center; justify-content: space-between;\n    }\n    .logo {\n      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem;\n      color: var(--ink); text-decoration: none; letter-spacing: -0.03em;\n    }\n    .logo span { color: var(--accent); }\n    .nav-links {\n      display: flex; align-items: center; gap: 2.25rem; list-style: none;\n    }\n    .nav-links a {\n      text-decoration: none; color: var(--ink-2); font-size: 0.9rem; font-weight: 400;\n      transition: color 0.2s;\n    }\n    .nav-links a:hover { color: var(--ink); }\n    .nav-actions { display: flex; align-items: center; gap: 0.75rem; }\n    .nav-login {\n      text-decoration: none; color: var(--ink-2); font-size: 0.9rem; font-weight: 500;\n      padding: 0.5rem 1rem; border-radius: 100px;\n      transition: all 0.2s;\n    }\n    .nav-login:hover { background: var(--cream-2); color: var(--ink); }\n    .hamburger {\n      display: none; cursor: pointer; background: none; border: none;\n      font-size: 1.4rem; color: var(--ink); padding: 0.25rem;\n    }\n\n    /* ─── Hero ─── */\n    .hero {\n      padding-top: 9rem; padding-bottom: 5rem;\n      position: relative; overflow: hidden;\n    }\n    .hero-bg {\n      position: absolute; inset: 0; z-index: 0;\n      background: radial-gradient(ellipse 70% 60% at 65% 30%, rgba(232,93,38,0.07) 0%, transparent 70%),\n                  radial-gradient(ellipse 50% 50% at 20% 80%, rgba(26,107,74,0.05) 0%, transparent 60%);\n    }\n    .hero-grid-bg {\n      position: absolute; inset: 0; z-index: 0; opacity: 0.4;\n      background-image:\n        linear-gradient(rgba(15,14,13,0.04) 1px, transparent 1px),\n        linear-gradient(90deg, rgba(15,14,13,0.04) 1px, transparent 1px);\n      background-size: 48px 48px;\n      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);\n    }\n    .hero-inner {\n      position: relative; z-index: 1;\n      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;\n    }\n    .hero-badge {\n      display: inline-flex; align-items: center; gap: 0.6rem;\n      background: var(--green-light); color: var(--green);\n      border: 1px solid rgba(26,107,74,0.15);\n      padding: 0.4rem 0.9rem; border-radius: 100px;\n      font-size: 0.8rem; font-weight: 500; margin-bottom: 1.5rem;\n    }\n    .hero-badge .dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse-green 2s infinite; }\n    @keyframes pulse-green {\n      0%, 100% { opacity: 1; transform: scale(1); }\n      50% { opacity: 0.6; transform: scale(1.3); }\n    }\n    .hero h1 {\n      font-family: 'Syne', sans-serif; font-weight: 800;\n      font-size: clamp(2.4rem, 4.5vw, 3.75rem);\n      line-height: 1.08; letter-spacing: -0.04em; color: var(--ink);\n      margin-bottom: 1.5rem;\n    }\n    .hero h1 em {\n      font-style: normal; color: var(--accent);\n      position: relative;\n    }\n    .hero h1 em::after {\n      content: '';\n      position: absolute; bottom: -2px; left: 0; right: 0; height: 3px;\n      background: var(--accent); border-radius: 2px; opacity: 0.3;\n    }\n    .hero-sub {\n      font-size: 1.1rem; color: var(--ink-3); line-height: 1.7;\n      max-width: 460px; margin-bottom: 2.5rem;\n    }\n    .hero-actions { display: flex; gap: 0.875rem; flex-wrap: wrap; margin-bottom: 2.5rem; }\n    .hero-trust {\n      display: flex; align-items: center; gap: 1rem;\n    }\n    .trust-avatars { display: flex; }\n    .trust-avatars span {\n      width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--cream);\n      display: flex; align-items: center; justify-content: center;\n      font-size: 0.7rem; font-weight: 600; color: white;\n      margin-left: -8px;\n    }\n    .trust-avatars span:first-child { margin-left: 0; }\n    .trust-text { font-size: 0.8rem; color: var(--ink-3); }\n    .trust-text strong { color: var(--ink-2); font-weight: 500; }\n\n    /* Hero Visual */\n    .hero-visual { position: relative; }\n    .hero-card {\n      background: var(--white); border-radius: var(--radius-xl);\n      box-shadow: var(--shadow-lg); overflow: hidden;\n      border: 1px solid rgba(15,14,13,0.06);\n      transform: rotate(1.5deg);\n      transition: transform 0.4s ease;\n    }\n    .hero-card:hover { transform: rotate(0deg) scale(1.01); }\n    .hero-card-header {\n      background: var(--ink); padding: 1.1rem 1.5rem;\n      display: flex; align-items: center; gap: 0.6rem;\n    }\n    .mac-dots { display: flex; gap: 6px; }\n    .mac-dots span {\n      width: 12px; height: 12px; border-radius: 50%;\n    }\n    .mac-dots span:nth-child(1) { background: #ff5f57; }\n    .mac-dots span:nth-child(2) { background: #febc2e; }\n    .mac-dots span:nth-child(3) { background: #28c840; }\n    .mac-title { color: rgba(255,255,255,0.5); font-size: 0.75rem; margin-left: auto; letter-spacing: 0.05em; }\n    .hero-card-body { padding: 1.5rem; background: var(--cream); min-height: 320px; }\n\n    /* Dashboard mockup inside card */\n    .mock-nav {\n      display: flex; gap: 0.5rem; margin-bottom: 1.25rem;\n    }\n    .mock-nav-item {\n      font-size: 0.7rem; padding: 0.3rem 0.75rem; border-radius: 100px;\n      background: var(--cream-3); color: var(--ink-3); font-weight: 500;\n    }\n    .mock-nav-item.active { background: var(--ink); color: white; }\n    .mock-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.25rem; }\n    .mock-stat {\n      background: white; border-radius: 10px; padding: 0.875rem 1rem;\n      border: 1px solid var(--cream-3);\n    }\n    .mock-stat-label { font-size: 0.65rem; color: var(--ink-3); margin-bottom: 0.25rem; }\n    .mock-stat-value { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.15rem; color: var(--ink); }\n    .mock-stat-change { font-size: 0.6rem; color: var(--green); display: flex; align-items: center; gap: 2px; margin-top: 2px; }\n    .mock-products { display: flex; flex-direction: column; gap: 0.5rem; }\n    .mock-product {\n      background: white; border-radius: 8px; padding: 0.65rem 0.875rem;\n      display: flex; align-items: center; gap: 0.75rem;\n      border: 1px solid var(--cream-3);\n    }\n    .mock-product-img {\n      width: 32px; height: 32px; border-radius: 6px;\n      display: flex; align-items: center; justify-content: center;\n      font-size: 1rem; flex-shrink: 0;\n    }\n    .mock-product-info { flex: 1; min-width: 0; }\n    .mock-product-name { font-size: 0.7rem; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }\n    .mock-product-meta { font-size: 0.6rem; color: var(--ink-3); }\n    .mock-product-price { font-size: 0.75rem; font-weight: 600; color: var(--ink); font-family: 'Syne', sans-serif; }\n    .mock-badge {\n      font-size: 0.55rem; padding: 0.15rem 0.45rem; border-radius: 100px;\n      font-weight: 500;\n    }\n    .mock-badge.green { background: var(--green-light); color: var(--green); }\n    .mock-badge.orange { background: var(--accent-bg); color: var(--accent); }\n\n    /* Floating cards */\n    .float-card {\n      position: absolute; background: white; border-radius: var(--radius);\n      box-shadow: var(--shadow-md); padding: 0.875rem 1.1rem;\n      border: 1px solid rgba(15,14,13,0.06);\n      animation: float 4s ease-in-out infinite;\n    }\n    .float-card-1 {\n      top: -1.5rem; right: -2rem;\n      animation-delay: 0s;\n    }\n    .float-card-2 {\n      bottom: 2rem; left: -2.5rem;\n      animation-delay: -2s;\n    }\n    @keyframes float {\n      0%, 100% { transform: translateY(0px); }\n      50% { transform: translateY(-8px); }\n    }\n    .float-label { font-size: 0.65rem; color: var(--ink-3); margin-bottom: 0.2rem; }\n    .float-value { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: var(--ink); }\n    .float-sub { font-size: 0.6rem; color: var(--green); }\n    .float-icon { font-size: 1.25rem; margin-bottom: 0.3rem; }\n\n    /* ─── Logos / Social Proof ─── */\n    .logos-section {\n      padding: 2.5rem 0; border-top: 1px solid var(--cream-3); border-bottom: 1px solid var(--cream-3);\n      background: var(--white);\n    }\n    .logos-label { text-align: center; font-size: 0.8rem; color: var(--ink-3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.75rem; }\n    .logos-row {\n      display: flex; align-items: center; justify-content: center;\n      gap: 3rem; flex-wrap: wrap;\n    }\n    .logo-item {\n      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem;\n      color: var(--cream-3); letter-spacing: -0.02em;\n      transition: color 0.2s;\n    }\n    .logo-item:hover { color: var(--ink-3); }\n\n    /* ─── Features ─── */\n    .features-section { padding: 6rem 0; background: var(--cream); }\n    .section-head { text-align: center; margin-bottom: 3.5rem; }\n    .section-head h2 {\n      font-family: 'Syne', sans-serif; font-weight: 800;\n      font-size: clamp(1.9rem, 3.5vw, 2.9rem);\n      letter-spacing: -0.04em; color: var(--ink); line-height: 1.1;\n      margin-bottom: 1rem;\n    }\n    .section-head p { font-size: 1rem; color: var(--ink-3); max-width: 520px; margin: 0 auto; }\n    .features-grid {\n      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;\n    }\n    .feature-card {\n      background: var(--white); border-radius: var(--radius-lg);\n      padding: 2rem 1.75rem; border: 1px solid var(--cream-3);\n      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);\n      position: relative; overflow: hidden;\n    }\n    .feature-card::before {\n      content: ''; position: absolute; inset: 0;\n      background: linear-gradient(135deg, rgba(232,93,38,0.04) 0%, transparent 60%);\n      opacity: 0; transition: opacity 0.3s;\n    }\n    .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: rgba(232,93,38,0.2); }\n    .feature-card:hover::before { opacity: 1; }\n    .feature-icon-wrap {\n      width: 48px; height: 48px; border-radius: 12px;\n      display: flex; align-items: center; justify-content: center;\n      margin-bottom: 1.25rem; font-size: 1.3rem;\n    }\n    .icon-orange { background: var(--accent-bg); color: var(--accent); }\n    .icon-green { background: var(--green-light); color: var(--green); }\n    .icon-blue { background: #e8f0fe; color: #3b5bdb; }\n    .icon-purple { background: #f3e8ff; color: #7c3aed; }\n    .feature-card h3 { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--ink); margin-bottom: 0.6rem; letter-spacing: -0.02em; }\n    .feature-card p { font-size: 0.875rem; color: var(--ink-3); line-height: 1.65; margin: 0; }\n\n    /* ─── How It Works ─── */\n    .how-section { padding: 6rem 0; background: var(--white); }\n    .how-grid {\n      display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;\n    }\n    .how-steps { display: flex; flex-direction: column; gap: 0; }\n    .how-step {\n      display: flex; gap: 1.5rem; padding: 1.75rem 0;\n      border-bottom: 1px solid var(--cream-3); cursor: pointer;\n      transition: all 0.2s;\n    }\n    .how-step:last-child { border-bottom: none; }\n    .how-step:hover .step-num { background: var(--ink); color: white; }\n    .step-num {\n      width: 40px; height: 40px; flex-shrink: 0;\n      border-radius: 50%; border: 2px solid var(--cream-3);\n      display: flex; align-items: center; justify-content: center;\n      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;\n      color: var(--ink-3); transition: all 0.2s;\n    }\n    .how-step.active .step-num { background: var(--accent); border-color: var(--accent); color: white; }\n    .step-content h3 { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--ink); margin-bottom: 0.4rem; letter-spacing: -0.02em; }\n    .step-content p { font-size: 0.875rem; color: var(--ink-3); margin: 0; line-height: 1.65; }\n    .how-visual {\n      background: var(--cream); border-radius: var(--radius-xl);\n      border: 1px solid var(--cream-3); overflow: hidden;\n      min-height: 420px; display: flex; align-items: center; justify-content: center;\n      position: relative;\n    }\n    .how-visual-inner { width: 88%; height: 88%; }\n\n    /* Catalog preview inside how-it-works */\n    .catalog-mock {\n      background: white; border-radius: 16px;\n      box-shadow: var(--shadow-md); overflow: hidden;\n      border: 1px solid var(--cream-3); width: 100%;\n    }\n    .catalog-header {\n      padding: 1rem 1.25rem; border-bottom: 1px solid var(--cream-3);\n      display: flex; align-items: center; gap: 0.75rem;\n    }\n    .catalog-logo-dot { width: 28px; height: 28px; border-radius: 8px; background: var(--accent); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem; font-weight: 700; }\n    .catalog-name { font-size: 0.85rem; font-weight: 600; color: var(--ink); }\n    .catalog-sub { font-size: 0.65rem; color: var(--ink-3); }\n    .catalog-share-btn { margin-left: auto; background: var(--ink); color: white; border: none; padding: 0.3rem 0.75rem; border-radius: 100px; font-size: 0.65rem; font-weight: 500; cursor: pointer; }\n    .catalog-products { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; padding: 1.25rem; }\n    .catalog-product {\n      background: var(--cream); border-radius: 10px; overflow: hidden;\n      border: 1px solid var(--cream-3);\n    }\n    .catalog-product-img {\n      height: 80px; display: flex; align-items: center; justify-content: center;\n      font-size: 2rem; background: white;\n    }\n    .catalog-product-info { padding: 0.6rem; }\n    .catalog-product-name { font-size: 0.7rem; font-weight: 600; color: var(--ink); margin-bottom: 0.15rem; }\n    .catalog-product-price { font-size: 0.65rem; color: var(--accent); font-weight: 600; }\n    .catalog-footer { padding: 0.875rem 1.25rem; border-top: 1px solid var(--cream-3); display: flex; gap: 0.5rem; align-items: center; }\n    .catalog-cta { flex: 1; background: var(--ink); color: white; border: none; padding: 0.5rem; border-radius: 8px; font-size: 0.7rem; font-weight: 500; cursor: pointer; text-align: center; }\n    .catalog-whatsapp { width: 32px; height: 32px; border-radius: 8px; background: #25d366; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.85rem; cursor: pointer; flex-shrink: 0; }\n\n    /* ─── Stats Strip ─── */\n    .stats-section {\n      padding: 4.5rem 0;\n      background: var(--ink);\n    }\n    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }\n    .stat-item { text-align: center; }\n    .stat-num {\n      font-family: 'Syne', sans-serif; font-weight: 800;\n      font-size: 2.5rem; color: var(--white); letter-spacing: -0.04em;\n      line-height: 1; margin-bottom: 0.4rem;\n    }\n    .stat-num span { color: var(--accent); }\n    .stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.5); }\n\n    /* ─── Testimonials ─── */\n    .testimonials-section { padding: 6rem 0; background: var(--cream); }\n    .testimonials-grid {\n      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;\n    }\n    .testimonial-card {\n      background: var(--white); border-radius: var(--radius-lg);\n      padding: 2rem; border: 1px solid var(--cream-3);\n      display: flex; flex-direction: column; gap: 1.25rem;\n      transition: all 0.3s ease;\n    }\n    .testimonial-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }\n    .testimonial-stars { display: flex; gap: 3px; color: #f59e0b; font-size: 0.8rem; }\n    .testimonial-text { font-size: 0.9rem; color: var(--ink-2); line-height: 1.7; flex: 1; font-style: italic; }\n    .testimonial-author { display: flex; align-items: center; gap: 0.75rem; }\n    .author-avatar {\n      width: 40px; height: 40px; border-radius: 50%;\n      display: flex; align-items: center; justify-content: center;\n      font-weight: 700; font-size: 0.9rem; color: white; flex-shrink: 0;\n    }\n    .author-name { font-size: 0.875rem; font-weight: 600; color: var(--ink); }\n    .author-title { font-size: 0.75rem; color: var(--ink-3); }\n\n    /* ─── CTA ─── */\n    .cta-section { padding: 6rem 0; background: var(--white); }\n    .cta-box {\n      background: var(--ink); border-radius: var(--radius-xl);\n      padding: 5rem 4rem; text-align: center;\n      position: relative; overflow: hidden;\n    }\n    .cta-box::before {\n      content: '';\n      position: absolute; top: -50%; right: -20%; width: 600px; height: 600px;\n      border-radius: 50%;\n      background: radial-gradient(circle, rgba(232,93,38,0.15) 0%, transparent 70%);\n    }\n    .cta-box::after {\n      content: '';\n      position: absolute; bottom: -40%; left: -15%; width: 400px; height: 400px;\n      border-radius: 50%;\n      background: radial-gradient(circle, rgba(26,107,74,0.1) 0%, transparent 70%);\n    }\n    .cta-box * { position: relative; z-index: 1; }\n    .cta-box h2 {\n      font-family: 'Syne', sans-serif; font-weight: 800;\n      font-size: clamp(1.9rem, 4vw, 3rem);\n      color: white; letter-spacing: -0.04em; line-height: 1.1;\n      margin-bottom: 1rem;\n    }\n    .cta-box p { color: rgba(255,255,255,0.6); font-size: 1rem; max-width: 480px; margin: 0 auto 2.5rem; }\n    .cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }\n    .btn-white { background: white; color: var(--ink); }\n    .btn-white:hover { background: var(--cream-2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,255,255,0.2); }\n    .btn-outline-white { background: transparent; color: white; border: 1.5px solid rgba(255,255,255,0.25); }\n    .btn-outline-white:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); }\n\n    /* ─── Footer ─── */\n    .footer { background: var(--cream); padding: 4rem 0 2rem; border-top: 1px solid var(--cream-3); }\n    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }\n    .footer-brand p { font-size: 0.875rem; color: var(--ink-3); margin-top: 0.75rem; max-width: 260px; line-height: 1.7; }\n    .footer-socials { display: flex; gap: 0.75rem; margin-top: 1.25rem; }\n    .social-link {\n      width: 34px; height: 34px; border-radius: 8px;\n      background: var(--cream-3); color: var(--ink-3);\n      display: flex; align-items: center; justify-content: center;\n      text-decoration: none; font-size: 0.85rem;\n      transition: all 0.2s;\n    }\n    .social-link:hover { background: var(--ink); color: white; }\n    .footer-col h4 { font-family: 'Syne', sans-serif; font-size: 0.875rem; font-weight: 700; color: var(--ink); margin-bottom: 1.25rem; letter-spacing: -0.01em; }\n    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }\n    .footer-col a { text-decoration: none; font-size: 0.85rem; color: var(--ink-3); transition: color 0.2s; }\n    .footer-col a:hover { color: var(--ink); }\n    .footer-bottom {\n      padding-top: 2rem; border-top: 1px solid var(--cream-3);\n      display: flex; align-items: center; justify-content: space-between;\n      flex-wrap: wrap; gap: 1rem;\n    }\n    .footer-bottom p { font-size: 0.8rem; color: var(--ink-3); margin: 0; }\n\n    /* ─── Mobile Menu ─── */\n    .mobile-menu {\n      position: fixed; top: 0; left: 0; width: 100%; height: 100%;\n      background: var(--white); z-index: 999;\n      padding: 5rem 2rem 2rem;\n      transform: translateX(-100%);\n      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);\n      display: flex; flex-direction: column; gap: 0.25rem;\n    }\n    .mobile-menu.open { transform: translateX(0); }\n    .mobile-menu a {\n      text-decoration: none; color: var(--ink); font-size: 1.25rem;\n      font-family: 'Syne', sans-serif; font-weight: 600;\n      padding: 0.75rem 0; border-bottom: 1px solid var(--cream-3);\n      display: block;\n    }\n    .mobile-menu-actions { margin-top: 2rem; display: flex; flex-direction: column; gap: 0.75rem; }\n    .mobile-menu-actions .btn { justify-content: center; }\n\n    /* ─── Animations ─── */\n    .fade-up {\n      opacity: 0; transform: translateY(24px);\n      transition: opacity 0.6s ease, transform 0.6s ease;\n    }\n    .fade-up.visible { opacity: 1; transform: translateY(0); }\n    .fade-up-delay-1 { transition-delay: 0.1s; }\n    .fade-up-delay-2 { transition-delay: 0.2s; }\n    .fade-up-delay-3 { transition-delay: 0.3s; }\n    .fade-up-delay-4 { transition-delay: 0.4s; }\n\n    /* ─── Responsive ─── */\n    @media (max-width: 1024px) {\n      .features-grid { grid-template-columns: repeat(2, 1fr); }\n      .footer-grid { grid-template-columns: repeat(2, 1fr); }\n      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 2.5rem; }\n    }\n    @media (max-width: 768px) {\n      .nav-links, .nav-actions { display: none; }\n      .hamburger { display: block; }\n      .hero-inner { grid-template-columns: 1fr; gap: 3rem; }\n      .hero h1 { font-size: 2.4rem; }\n      .hero-visual { order: -1; }\n      .hero-card { transform: rotate(0); }\n      .float-card-1 { top: -0.5rem; right: -0.5rem; }\n      .float-card-2 { display: none; }\n      .how-grid { grid-template-columns: 1fr; gap: 3rem; }\n      .testimonials-grid { grid-template-columns: 1fr; }\n      .cta-box { padding: 3rem 1.75rem; }\n      .features-grid { grid-template-columns: 1fr; }\n    }\n    @media (max-width: 640px) {\n      .stats-grid { grid-template-columns: repeat(2, 1fr); }\n      .footer-grid { grid-template-columns: 1fr; }\n      .footer-bottom { flex-direction: column; align-items: flex-start; }\n      .logos-row { gap: 1.5rem; }\n    }\n  ",
+					}}
+				/>
+				{/* Navbar */}
+				<nav className='navbar' id='navbar'>
+					<div className='container nav-inner'>
+						<a href='#' className='logo'>
+							Quick<span>Share</span>
+						</a>
+						<ul className='nav-links'>
+							<li>
+								<a href='#features'>Features</a>
+							</li>
+							<li>
+								<a href='#how-it-works'>How It Works</a>
+							</li>
+							<li>
+								<a href='#pricing'>Pricing</a>
+							</li>
+						</ul>
+						<div className='nav-actions'>
+							<a href='/login' className='nav-login'>
+								Log in
+							</a>
+							<a href='#pricing' className='btn btn-primary'>
+								Get Started Free
+							</a>
+						</div>
+						<button className='hamburger' id='hamburger' aria-label='Menu'>
+							<i className='fas fa-bars' />
+						</button>
+					</div>
+				</nav>
+				{/* Mobile Menu */}
+				<div className='mobile-menu' id='mobileMenu'>
+					<a href='#features' className='mobile-link'>
+						Features
+					</a>
+					<a href='#how-it-works' className='mobile-link'>
+						How It Works
+					</a>
+					<a href='#pricing' className='mobile-link'>
+						Pricing
+					</a>
+					<a href='/login' className='mobile-link'>
+						Log in
+					</a>
+					<div className='mobile-menu-actions'>
+						<a href='/login' className='btn btn-accent btn-lg'>
+							Get Started Free
+						</a>
+					</div>
+				</div>
+				{/* Hero */}
+				<section className='hero'>
+					<div className='hero-bg' />
+					<div className='hero-grid-bg' />
+					<div className='container hero-inner'>
+						<div className='hero-content'>
+							<h1>
+								Sell More with
+								<br />
+								<em>Digital Catalogs</em>
+								<br />
+								Your Buyers Love
+							</h1>
+							<p className='hero-sub'>
+								QuickShare helps wholesalers and merchants create stunning product
+								catalogs, share them instantly, and manage orders — all from one
+								smart dashboard.
+							</p>
+							<div className='hero-actions'>
+								<a href='/login' className='btn btn-accent btn-lg'>
+									Start Selling Free <i className='fas fa-arrow-right' />
+								</a>
+								<a href='#how-it-works' className='btn btn-ghost btn-lg'>
+									See How It Works
+								</a>
+							</div>
+							<div className='hero-trust'>
+								<div className='trust-avatars'>
+									<span style={{ background: "#e85d26" }}>M</span>
+									<span style={{ background: "#3b5bdb" }}>P</span>
+									<span style={{ background: "#1a6b4a" }}>R</span>
+									<span style={{ background: "#7c3aed" }}>S</span>
+								</div>
+								<p className='trust-text' style={{ margin: 0 }}>
+									<strong>10,000+ merchants</strong> growing with QuickShare
+								</p>
+							</div>
+						</div>
+						<div className='hero-visual'>
+							<div className='hero-card'>
+								<div className='hero-card-header'>
+									<div className='mac-dots'>
+										<span />
+										<span />
+										<span />
+									</div>
+									<span className='mac-title'>QuickShare Dashboard</span>
+								</div>
+								<div className='hero-card-body'>
+									<div className='mock-nav'>
+										<div className='mock-nav-item active'>Overview</div>
+										<div className='mock-nav-item'>Catalogs</div>
+										<div className='mock-nav-item'>Orders</div>
+										<div className='mock-nav-item'>Products</div>
+									</div>
+									<div className='mock-stats'>
+										<div className='mock-stat'>
+											<div className='mock-stat-label'>Total Revenue</div>
+											<div className='mock-stat-value'>₹2.4L</div>
+											<div className='mock-stat-change'>
+												<i className='fas fa-arrow-up' /> +18%
+											</div>
+										</div>
+										<div className='mock-stat'>
+											<div className='mock-stat-label'>Orders Today</div>
+											<div className='mock-stat-value'>38</div>
+											<div className='mock-stat-change'>
+												<i className='fas fa-arrow-up' /> +6
+											</div>
+										</div>
+										<div className='mock-stat'>
+											<div className='mock-stat-label'>Active Catalogs</div>
+											<div className='mock-stat-value'>12</div>
+											<div className='mock-stat-change'>
+												<i className='fas fa-arrow-up' /> +2
+											</div>
+										</div>
+									</div>
+									<div className='mock-products'>
+										<div className='mock-product'>
+											<div
+												className='mock-product-img'
+												style={{ background: "#fdf0ea" }}>
+												👕
+											</div>
+											<div className='mock-product-info'>
+												<div className='mock-product-name'>
+													Cotton Kurta Set
+												</div>
+												<div className='mock-product-meta'>SKU: KS-201</div>
+											</div>
+											<div
+												style={{
+													display: "flex",
+													flexDirection: "column",
+													alignItems: "flex-end",
+													gap: 3,
+												}}>
+												<div className='mock-product-price'>₹850</div>
+												<div className='mock-badge green'>In Stock</div>
+											</div>
+										</div>
+										<div className='mock-product'>
+											<div
+												className='mock-product-img'
+												style={{ background: "#e8f0fe" }}>
+												👜
+											</div>
+											<div className='mock-product-info'>
+												<div className='mock-product-name'>
+													Leather Handbag
+												</div>
+												<div className='mock-product-meta'>SKU: LH-078</div>
+											</div>
+											<div
+												style={{
+													display: "flex",
+													flexDirection: "column",
+													alignItems: "flex-end",
+													gap: 3,
+												}}>
+												<div className='mock-product-price'>₹1,200</div>
+												<div className='mock-badge orange'>3 left</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div className='float-card float-card-1'>
+								<div className='float-icon'>🛒</div>
+								<div className='float-label'>New order</div>
+								<div className='float-value'>₹3,450</div>
+								<div className='float-sub'>just now via WhatsApp</div>
+							</div>
+							<div className='float-card float-card-2'>
+								<div className='float-label'>Catalog Views</div>
+								<div className='float-value'>1,248</div>
+								<div className='float-sub' style={{ color: "var(--accent)" }}>
+									↑ +34% this week
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+				{/* Logos */}
+				<div className='logos-section'>
+					<div className='container'>
+						<p className='logos-label'>Merchants from all industries</p>
+						<div className='logos-row'>
+							<span className='logo-item'>FabricWorld</span>
+							<span className='logo-item'>SpiceRoute</span>
+							<span className='logo-item'>TechParts</span>
+							<span className='logo-item'>GreenGrove</span>
+							<span className='logo-item'>CraftHouse</span>
+							<span className='logo-item'>StyleMart</span>
+						</div>
+					</div>
+				</div>
+				{/* Features */}
+				<section className='features-section' id='features'>
+					<div className='container'>
+						<div className='section-head fade-up'>
+							<div className='eyebrow'>Core Features</div>
+							<h2>
+								Everything you need to
+								<br />
+								sell smarter online
+							</h2>
+							<p>
+								A complete toolkit for merchants and wholesalers to digitize their
+								sales process from catalog to delivery.
+							</p>
+						</div>
+						<div className='features-grid'>
+							<div className='feature-card fade-up fade-up-delay-1'>
+								<div className='feature-icon-wrap icon-orange'>
+									<i className='fas fa-book-open' />
+								</div>
+								<h3>Digital Catalogs</h3>
+								<p>
+									Build beautiful, mobile-first product catalogs in minutes. Add
+									photos, descriptions, and pricing with zero technical skills
+									required.
+								</p>
+							</div>
+							<div className='feature-card fade-up fade-up-delay-2'>
+								<div className='feature-icon-wrap icon-green'>
+									<i className='fas fa-share-nodes' />
+								</div>
+								<h3>Instant Sharing</h3>
+								<p>
+									Share your catalog link anywhere — WhatsApp, Instagram, email,
+									or embed it on your website. Buyers access it instantly, no app
+									needed.
+								</p>
+							</div>
+							<div className='feature-card fade-up fade-up-delay-3'>
+								<div className='feature-icon-wrap icon-blue'>
+									<i className='fas fa-cubes' />
+								</div>
+								<h3>Product Management</h3>
+								<p>
+									Manage your entire inventory from one dashboard. Bulk upload,
+									edit pricing, track stock, and organize products into
+									collections.
+								</p>
+							</div>
+							<div className='feature-card fade-up fade-up-delay-4'>
+								<div className='feature-icon-wrap icon-purple'>
+									<i className='fas fa-chart-bar' />
+								</div>
+								<h3>Order Tracking</h3>
+								<p>
+									Receive orders directly inside QuickShare. Track status, manage
+									fulfillment, and keep buyers informed at every step.
+								</p>
+							</div>
+						</div>
+					</div>
+				</section>
+				{/* Stats */}
+				<section className='stats-section'>
+					<div className='container'>
+						<div className='stats-grid'>
+							<div className='stat-item fade-up'>
+								<div className='stat-num'>
+									10<span>K+</span>
+								</div>
+								<div className='stat-label'>Active Merchants</div>
+							</div>
+							<div className='stat-item fade-up fade-up-delay-1'>
+								<div className='stat-num'>
+									₹500<span>Cr+</span>
+								</div>
+								<div className='stat-label'>Orders Processed</div>
+							</div>
+							<div className='stat-item fade-up fade-up-delay-2'>
+								<div className='stat-num'>
+									2<span>M+</span>
+								</div>
+								<div className='stat-label'>Catalog Views / Month</div>
+							</div>
+							<div className='stat-item fade-up fade-up-delay-3'>
+								<div className='stat-num'>
+									4.8<span>★</span>
+								</div>
+								<div className='stat-label'>Average Merchant Rating</div>
+							</div>
+						</div>
+					</div>
+				</section>
+				{/* How It Works */}
+				<section className='how-section' id='how-it-works'>
+					<div className='container'>
+						<div className='how-grid'>
+							<div>
+								<div className='eyebrow fade-up'>How It Works</div>
+								<h2
+									className='fade-up'
+									style={{
+										fontFamily: '"Syne",sans-serif',
+										fontWeight: 800,
+										fontSize: "clamp(1.9rem,3.5vw,2.75rem)",
+										letterSpacing: "-0.04em",
+										color: "var(--ink)",
+										lineHeight: "1.1",
+										marginBottom: "1rem",
+									}}>
+									Start selling in
+									<br />3 simple steps
+								</h2>
+								<p
+									className='fade-up'
+									style={{
+										color: "var(--ink-3)",
+										marginBottom: "2.5rem",
+										fontSize: "0.95rem",
+									}}>
+									No technical setup. No complex integrations. Just upload, share,
+									and sell.
+								</p>
+								<div className='how-steps'>
+									<div className='how-step active fade-up'>
+										<div className='step-num'>1</div>
+										<div className='step-content'>
+											<h3>Create Your Catalog</h3>
+											<p>
+												Upload your products, add photos, set prices and
+												descriptions. Organize them into beautiful
+												collections that showcase your brand.
+											</p>
+										</div>
+									</div>
+									<div className='how-step fade-up fade-up-delay-1'>
+										<div className='step-num'>2</div>
+										<div className='step-content'>
+											<h3>Share With Buyers</h3>
+											<p>
+												Get a unique link for your catalog. Share it on
+												WhatsApp, email, Instagram, or any platform. Buyers
+												browse without creating an account.
+											</p>
+										</div>
+									</div>
+									<div className='how-step fade-up fade-up-delay-2'>
+										<div className='step-num'>3</div>
+										<div className='step-content'>
+											<h3>Receive &amp; Manage Orders</h3>
+											<p>
+												Buyers place orders directly from your catalog.
+												Track, confirm, and fulfill orders from your
+												QuickShare dashboard in real time.
+											</p>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div className='how-visual fade-up'>
+								<div className='how-visual-inner'>
+									<div className='catalog-mock'>
+										<div className='catalog-header'>
+											<div className='catalog-logo-dot'>QS</div>
+											<div>
+												<div className='catalog-name'>
+													Riya Fashion House
+												</div>
+												<div className='catalog-sub'>
+													Summer Collection 2026
+												</div>
+											</div>
+											<button className='catalog-share-btn'>
+												<i className='fas fa-share-alt' /> Share
+											</button>
+										</div>
+										<div className='catalog-products'>
+											<div className='catalog-product'>
+												<div className='catalog-product-img'>👗</div>
+												<div className='catalog-product-info'>
+													<div className='catalog-product-name'>
+														Floral Sundress
+													</div>
+													<div className='catalog-product-price'>
+														₹1,450
+													</div>
+												</div>
+											</div>
+											<div className='catalog-product'>
+												<div className='catalog-product-img'>👔</div>
+												<div className='catalog-product-info'>
+													<div className='catalog-product-name'>
+														Linen Shirt
+													</div>
+													<div className='catalog-product-price'>
+														₹750
+													</div>
+												</div>
+											</div>
+											<div className='catalog-product'>
+												<div className='catalog-product-img'>👡</div>
+												<div className='catalog-product-info'>
+													<div className='catalog-product-name'>
+														Block Heels
+													</div>
+													<div className='catalog-product-price'>
+														₹1,200
+													</div>
+												</div>
+											</div>
+											<div className='catalog-product'>
+												<div className='catalog-product-img'>🕶️</div>
+												<div className='catalog-product-info'>
+													<div className='catalog-product-name'>
+														UV Sunglasses
+													</div>
+													<div className='catalog-product-price'>
+														₹480
+													</div>
+												</div>
+											</div>
+										</div>
+										<div className='catalog-footer'>
+											<button className='catalog-cta'>Place Order</button>
+											<div className='catalog-whatsapp'>
+												<i className='fab fa-whatsapp' />
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+				{/* Testimonials */}
+				<section className='testimonials-section'>
+					<div className='container'>
+						<div className='section-head fade-up'>
+							<div className='eyebrow'>Customer Stories</div>
+							<h2>Merchants love QuickShare</h2>
+							<p>
+								Real stories from wholesalers and merchants who transformed their
+								business with digital catalogs.
+							</p>
+						</div>
+						<div className='testimonials-grid'>
+							<div className='testimonial-card fade-up fade-up-delay-1'>
+								<div className='testimonial-stars'>
+									<i className='fas fa-star' />
+									<i className='fas fa-star' />
+									<i className='fas fa-star' />
+									<i className='fas fa-star' />
+									<i className='fas fa-star' />
+								</div>
+								<p className='testimonial-text'>
+									"Before QuickShare, I was sending photos on WhatsApp one by one.
+									Now my buyers just open the link and order directly. My order
+									volume has doubled in 3 months."
+								</p>
+								<div className='testimonial-author'>
+									<div
+										className='author-avatar'
+										style={{ background: "#e85d26" }}>
+										R
+									</div>
+									<div>
+										<div className='author-name'>Ravi Malhotra</div>
+										<div className='author-title'>
+											Textile Wholesaler, Surat
+										</div>
+									</div>
+								</div>
+							</div>
+							<div className='testimonial-card fade-up fade-up-delay-2'>
+								<div className='testimonial-stars'>
+									<i className='fas fa-star' />
+									<i className='fas fa-star' />
+									<i className='fas fa-star' />
+									<i className='fas fa-star' />
+									<i className='fas fa-star' />
+								</div>
+								<p className='testimonial-text'>
+									"Setting up my first catalog took less than 20 minutes. My
+									customers keep saying how professional it looks. QuickShare made
+									me look like a big brand."
+								</p>
+								<div className='testimonial-author'>
+									<div
+										className='author-avatar'
+										style={{ background: "#3b5bdb" }}>
+										P
+									</div>
+									<div>
+										<div className='author-name'>Priya Iyer</div>
+										<div className='author-title'>Boutique Owner, Chennai</div>
+									</div>
+								</div>
+							</div>
+							<div className='testimonial-card fade-up fade-up-delay-3'>
+								<div className='testimonial-stars'>
+									<i className='fas fa-star' />
+									<i className='fas fa-star' />
+									<i className='fas fa-star' />
+									<i className='fas fa-star' />
+									<i className='fas fa-star' />
+								</div>
+								<p className='testimonial-text'>
+									"The order management dashboard is incredible. I can see what's
+									pending, what's shipped, and send updates to buyers — all from
+									my phone while I'm at the warehouse."
+								</p>
+								<div className='testimonial-author'>
+									<div
+										className='author-avatar'
+										style={{ background: "#1a6b4a" }}>
+										A
+									</div>
+									<div>
+										<div className='author-name'>Arjun Shah</div>
+										<div className='author-title'>
+											Electronics Distributor, Mumbai
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+				{/* CTA */}
+				<section className='cta-section' id='pricing'>
+					<div className='container'>
+						<div className='cta-box'>
+							<div
+								className='eyebrow'
+								style={{
+									background: "rgba(232,93,38,0.15)",
+									borderColor: "rgba(232,93,38,0.2)",
+									color: "#f07b47",
+								}}>
+								Free to Start
+							</div>
+							<h2>
+								Ready to sell smarter?
+								<br />
+								Create your catalog today.
+							</h2>
+							<p>
+								Join thousands of merchants already growing their business on
+								QuickShare. No credit card needed to get started.
+							</p>
+							<div className='cta-actions'>
+								<a href='tel:7506627003' className='btn btn-outline-white btn-lg'>
+									Call for Demo
+								</a>
+							</div>
+						</div>
+					</div>
+				</section>
+				{/* Footer */}
+				<footer className='footer'>
+					<div className='container'>
+						<div className='footer-grid'>
+							<div className='footer-brand'>
+								<div className='logo' style={{ display: "inline-block" }}>
+									Quick<span>Sell</span>
+								</div>
+								<p>
+									The digital catalog platform for wholesalers and merchants to
+									sell products online faster and smarter.
+								</p>
+								<div className='footer-socials'>
+									<a
+										href='https://wa.me/917506627003'
+										target='_blank'
+										className='social-link'>
+										<i className='fab fa-whatsapp' />
+									</a>
+									<a href='tel:7506627003' className='social-link'>
+										<i className='fa fa-phone' />
+									</a>
+								</div>
+							</div>
+							<div className='footer-col'>
+								<h4>Product</h4>
+								<ul>
+									<li>
+										<a href='#features'>Features</a>
+									</li>
+									<li>
+										<a href='#pricing'>Pricing</a>
+									</li>
+									<li>
+										<a href='#demo'>Demo</a>
+									</li>
+								</ul>
+							</div>
+							<div className='footer-col'>
+								<h4>Company</h4>
+								<ul>
+									<li>
+										<a href='https://neelkanthtech.vercel.app/' target='_blank'>
+											About Us
+										</a>
+									</li>
+									<li>
+										<a href='tel:7506627003'>Contact</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div className='footer-bottom'>
+							<p>© 2026 Neelkanth Tech. All rights reserved.</p>
+							<p>Made with ♥ for merchants everywhere</p>
+						</div>
+					</div>
+				</footer>
+			</>
+		</div>
+	);
+	return (
 		<div
 			dangerouslySetInnerHTML={{
 				__html: `
