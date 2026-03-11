@@ -404,7 +404,7 @@ export default function Home() {
       <li><a href="/login" class="mobile-link">Log in <i class="fas fa-chevron-right" style="font-size:0.7rem;opacity:0.35;"></i></a></li>
     </ul>
     <div class="mobile-drawer-actions">
-      <a href="/login" class="btn btn-accent btn-lg mobile-link">Start Selling Free <i class="fas fa-arrow-right"></i></a>
+      <a href="#pricing" class="btn btn-accent btn-lg mobile-link">Start Selling Free <i class="fas fa-arrow-right"></i></a>
       <a href="tel:7506627003" class="btn btn-ghost btn-lg"><i class="fas fa-phone"></i> Call for Demo</a>
     </div>
   </div>
@@ -418,22 +418,15 @@ export default function Home() {
       <div class="hero-content">
         <div class="hero-badge">
           <span class="dot"></span>
-          Trusted by 10,000+ merchants
+          Trusted by merchants
         </div>
         <h1>Sell More with<br/><em>Digital Catalogs</em><br/>Your Buyers Love</h1>
         <p class="hero-sub">QuickShare helps wholesalers and merchants create stunning product catalogs, share them instantly, and manage orders — all from one smart dashboard.</p>
         <div class="hero-actions">
-          <a href="/login" class="btn btn-accent btn-lg">Start Selling Free <i class="fas fa-arrow-right"></i></a>
+          <a href="#pricing" class="btn btn-accent btn-lg">Start Selling Free <i class="fas fa-arrow-right"></i></a>
           <a href="#how-it-works" class="btn btn-ghost btn-lg">See How It Works</a>
         </div>
         <div class="hero-trust">
-          <div class="trust-avatars">
-            <span style="background:#e85d26;">M</span>
-            <span style="background:#3b5bdb;">P</span>
-            <span style="background:#1a6b4a;">R</span>
-            <span style="background:#7c3aed;">S</span>
-          </div>
-          <p class="trust-text" style="margin:0;"><strong>10,000+ merchants</strong> growing with QuickShare</p>
         </div>
       </div>
 
@@ -688,7 +681,7 @@ export default function Home() {
         <h2>Ready to sell smarter?<br/>Create your catalog today.</h2>
         <p>Join thousands of merchants already growing their business on QuickShare. No credit card needed to get started.</p>
         <div class="cta-actions">
-          <a href="/login" class="btn btn-white btn-lg">Create Free Account <i class="fas fa-arrow-right"></i></a>
+          
           <a href="tel:7506627003" class="btn btn-outline-white btn-lg"><i class="fas fa-phone"></i> Call for Demo</a>
         </div>
       </div>
