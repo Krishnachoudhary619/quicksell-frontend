@@ -2,6 +2,7 @@
 
 import { useCartStore } from "@/store/cart.store";
 import { generateWhatsappLink } from "@/utils/whatsapp";
+import Image from "next/image";
 
 interface CartDrawerProps {
 	isOpen: boolean;
@@ -23,7 +24,7 @@ export default function CartDrawer({ isOpen, onClose, catalogName }: CartDrawerP
 				onClick={onClose}></div>
 
 			{/* Sidebar */}
-			<div className='relative w-full max-w-md bg-white h-full shadow-2xl animate-in slide-in-from-right duration-500 flex flex-col'>
+			<div className='relative w-full md:max-w-md bg-white h-full shadow-2xl animate-in slide-in-from-right duration-500 flex flex-col'>
 				<div className='p-6 flex items-center justify-between border-b border-gray-100'>
 					<div>
 						<h2 className='text-2xl font-black text-gray-900'>My Cart</h2>
@@ -84,9 +85,11 @@ export default function CartDrawer({ isOpen, onClose, catalogName }: CartDrawerP
 								<div key={item.id} className='flex gap-4 group'>
 									<div className='w-24 h-24 bg-gray-50 rounded-2xl flex-shrink-0 flex items-center justify-center overflow-hidden border border-gray-100'>
 										{item.thumbnail_url ? (
-											<img
+											<Image
 												src={item.thumbnail_url}
 												alt={item.product_name}
+												width={100}
+												height={100}
 												className='w-full h-full object-contain'
 											/>
 										) : (

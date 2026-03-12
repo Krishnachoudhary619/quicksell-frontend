@@ -9,10 +9,10 @@ import {
     PublicCatalogResponse,
 } from "../types/catalog.types";
 
-export const useCatalogs = () => {
+export const useCatalogs = (initialPublicCatalog: PublicCatalogResponse | null = null) => {
     const [catalogs, setCatalogs] = useState<CatalogSummary[]>([]);
     const [catalogProducts, setCatalogProducts] = useState<CatalogProductsResponse | null>(null);
-    const [publicCatalog, setPublicCatalog] = useState<PublicCatalogResponse | null>(null);
+    const [publicCatalog, setPublicCatalog] = useState<PublicCatalogResponse | null>(initialPublicCatalog);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -164,39 +164,33 @@ export const useCatalogs = () => {
         }
     };
 
-    const getPublicCatalog = useCallback(async (slug: string, retryCount = 0) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await catalogService.getPublicCatalog(slug);
-            if (response.success && response.data) {
+    const getPublicCatalog = useCallback(
+        async (slug: string) => {
+            if (publicCatalog) return publicCatalog; // prevent refetch
+
+            setLoading(true);
+            setError(null);
+
+            try {
+                const response = await catalogService.getPublicCatalog(slug);
+
+                if (!response.success || !response.data) {
+                    throw new Error("Catalog not found");
+                }
+
                 setPublicCatalog(response.data);
-            } else {
-                throw new Error(response.message || "Failed to fetch public catalog");
-            }
-            return response.data;
-        } catch (err: any) {
-            // Automatic retry once for transient mobile connection issues
-            if (retryCount < 1) {
-                console.warn(`Fetch failed for ${slug}, retrying...`);
-                return getPublicCatalog(slug, retryCount + 1);
-            }
+                return response.data;
+            } catch (err: any) {
+                const msg = err?.response?.data?.message || "Catalog unavailable. Please refresh.";
 
-            let msg = "The catalog is currently unavailable. Please check your connection or try again later.";
-            if (err.code === "ECONNABORTED") {
-                msg = "The request timed out. The connection might be slow, please try again.";
-            } else if (err.response?.data?.message) {
-                msg = err.response.data.message;
-            } else if (err.message) {
-                msg = err.message;
+                setError(msg);
+                throw err;
+            } finally {
+                setLoading(false);
             }
-
-            setError(msg);
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+        },
+        [publicCatalog]
+    );
 
     return {
         catalogs,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCartStore } from "@/store/cart.store";
+import Image from "next/image";
 
 interface ProductDetailModalProps {
 	product: {
@@ -21,9 +22,9 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
 	const qty = cart.find((item) => item.id === product.id)?.quantity || 0;
 
 	return (
-		<div className='fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-md animate-in fade-in duration-300'>
+		<div className='fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-300' onClick={onClose}>
 			<div
-				className='bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-8 duration-500'
+				className='bg-white w-full md:max-w-2xl max-h-[90vh] overflow-y-auto rounded-t-[2.5rem] md:rounded-[3rem] shadow-2xl animate-in slide-in-from-bottom duration-500'
 				onClick={(e) => e.stopPropagation()}>
 				<div className='relative'>
 					{/* Close Button */}
@@ -47,12 +48,14 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
 
 					<div className='flex flex-col md:flex-row'>
 						{/* Image Section */}
-						<div className='w-full md:w-1/2 p-10 bg-gray-50 flex items-center justify-center'>
+						<div className='w-full md:w-1/2 p-6 md:p-10 bg-gray-50 flex items-center justify-center'>
 							{product.thumbnail_url ? (
-								<img
+								<Image
 									src={product.thumbnail_url}
 									alt={product.product_name}
-									className='w-full h-auto max-h-[400px] object-contain drop-shadow-2xl'
+									width={600}
+									height={600}
+									className='w-full h-auto max-h-[250px] md:max-h-[400px] object-contain drop-shadow-2xl'
 								/>
 							) : (
 								<div className='w-full aspect-square bg-white rounded-3xl flex items-center justify-center text-gray-200 border border-gray-100'>
@@ -86,10 +89,10 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
 								<span className='px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-[0.2em] rounded-full'>
 									Product Detail
 								</span>
-								<h2 className='text-3xl font-black text-gray-900 mt-3 leading-tight'>
+								<h2 className='text-xl md:text-3xl font-black text-gray-900 mt-3 leading-tight'>
 									{product.product_name}
 								</h2>
-								<p className='text-3xl font-black text-indigo-600 mt-4 tracking-tighter'>
+								<p className='text-xl md:text-3xl font-black text-indigo-600 mt-4 tracking-tighter'>
 									₹{(product.price || 0).toLocaleString()}
 								</p>
 							</div>
